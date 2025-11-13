@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Application/">
+    <Project Path="Authentication.RefreshToken.Application.Dto/Authentication.RefreshToken.Application.Dto.csproj" />
+    <Project Path="Authentication.RefreshToken.Application.Interfaces/Authentication.RefreshToken.Application.Interfaces.csproj" />
+    <Project Path="Authentication.RefreshToken.Application.UseCases/Authentication.RefreshToken.Application.UseCases.csproj" />
+    <Project Path="Authentication.RefreshToken.Application.Validator/Authentication.RefreshToken.Application.Validator.csproj" />
+  </Folder>
+  <Folder Name="/Concerns/">
+    <Project Path="Authentication.RefreshToken.Concerns.Common/Authentication.RefreshToken.Concerns.Common.csproj" />
+    <Project Path="Authentication.RefreshToken.Concerns.Logging/Authentication.RefreshToken.Concerns.Logging.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Authentication.RefreshToken.Domain/Authentication.RefreshToken.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Authentication.RefreshToken.Infrastructure/Authentication.RefreshToken.Infrastructure.csproj" />
+    <Project Path="Authentication.RefreshToken.Persistence/Authentication.RefreshToken.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="Authentication.RefreshToken.Services.WebApi/Authentication.RefreshToken.Services.WebApi.csproj" />
+  </Folder>
+</Solution>
