@@ -3,7 +3,6 @@
     <Project Path="Authentication.RefreshToken.Application.Dto/Authentication.RefreshToken.Application.Dto.csproj" />
     <Project Path="Authentication.RefreshToken.Application.Interfaces/Authentication.RefreshToken.Application.Interfaces.csproj" />
     <Project Path="Authentication.RefreshToken.Application.UseCases/Authentication.RefreshToken.Application.UseCases.csproj" />
-    <Project Path="Authentication.RefreshToken.Application.Validator/Authentication.RefreshToken.Application.Validator.csproj" />
   </Folder>
   <Folder Name="/Concerns/">
     <Project Path="Authentication.RefreshToken.Concerns.Common/Authentication.RefreshToken.Concerns.Common.csproj" />

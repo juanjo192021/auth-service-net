@@ -1,0 +1,25 @@
+﻿using FluentValidation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignIn
+{
+    public class SignInValidator : AbstractValidator<SignInCommand>
+    {
+        public SignInValidator()
+        {
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("The email field is required.")
+                .NotNull().WithMessage("The email field cannot be null.");
+
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("The password field is required.")
+                .MinimumLength(5).WithMessage("The password must be at least 5 characters long.")
+                .MaximumLength(100).WithMessage("The password cannot exceed 100 characters.");
+        }
+    }
+}

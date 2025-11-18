@@ -37,27 +37,23 @@ namespace Authentication.RefreshToken.Persistence.Configurations
                    .HasMaxLength(20);
 
             builder.Property(u => u.DocumentNumber)
-                   .IsRequired()
                    .HasMaxLength(20);
 
             builder.HasIndex(u => u.DocumentNumber)
                    .IsUnique();
 
-            builder.Property(u => u.BirthDate)
-                   .IsRequired();
+            builder.Property(u => u.BirthDate);
 
             builder.Property(u => u.Phone)
                    .HasMaxLength(20);
 
             builder.Property(u => u.Mobile)
-                   .IsRequired()
                    .HasMaxLength(20);
 
             builder.Property(u => u.Gender)
                    .HasMaxLength(20);
 
             builder.Property(u => u.Address)
-                   .IsRequired()
                    .HasMaxLength(200);
 
             builder.Property(u => u.IsActive)

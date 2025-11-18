@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Authentication.RefreshToken.Application.Dto\Authentication.RefreshToken.Application.Dto.csproj" />
+    <ProjectReference Include="..\Authentication.RefreshToken.Concerns.Common\Authentication.RefreshToken.Concerns.Common.csproj" />
+    <ProjectReference Include="..\Authentication.RefreshToken.Domain\Authentication.RefreshToken.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

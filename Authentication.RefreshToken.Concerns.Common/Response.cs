@@ -1,7 +1,6 @@
 ﻿namespace Authentication.RefreshToken.Concerns.Common
 {
-    public class Class1
+    public class Response<T> : ResponseGeneric<T>
     {
-
     }
 }
