@@ -2,8 +2,9 @@
 
 namespace Authentication.RefreshToken.Domain.Entities
 {
-    public class UserRefreshToken: BaseEntity
+    public class UserRefreshToken
     {
+        public int Id { get; set; }
         public int UserId { get; set; }
         public string JwtId { get; set; }
         public string RefreshTokenHash { get; set; }

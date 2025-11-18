@@ -76,7 +76,8 @@ namespace Authentication.RefreshToken.Persistence.Seed
                 _context.UserRoles.Add(new UserRole
                 {
                     UserId = admin.Id,
-                    RoleId = superAdminRole.Id
+                    RoleId = superAdminRole.Id,
+                    IsAssigned = true
                 });
 
                 await _context.SaveChangesAsync();

@@ -1,16 +1,12 @@
-﻿namespace Authentication.RefreshToken.Domain.Entities
+﻿using Authentication.RefreshToken.Domain.Common;
+
+namespace Authentication.RefreshToken.Domain.Entities
 {
-    public class UserRole
+    public class UserRole : BaseAuditableEntity
     {
         public int UserId { get; set; }
         public int RoleId { get; set; }
         public bool IsAssigned { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public int? CreatedBy { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public int? UpdatedBy { get; set; }
-        public DateTime? DeactivatedAt { get; set; }
-        public int? DeactivatedBy { get; set; }
 
         // Propiedades de Navegación
         public virtual User User { get; set; }

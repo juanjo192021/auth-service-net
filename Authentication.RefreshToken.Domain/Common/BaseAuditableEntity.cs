@@ -1,6 +1,6 @@
 ﻿namespace Authentication.RefreshToken.Domain.Common
 {
-    public class BaseAuditableEntity: BaseEntity
+    public class BaseAuditableEntity
     {
         public DateTime CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
