@@ -39,9 +39,11 @@ if (app.Environment.IsDevelopment())
 
         foreach (var description in provider.ApiVersionDescriptions)
         {
-            cfg.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToString()); //
+            cfg.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                              description.GroupName.ToUpperInvariant());
         }
-        cfg.RoutePrefix = "swagger"; // Prefijo de la ruta
+
+        cfg.RoutePrefix = ""; // Prefijo de la ruta
         cfg.DisplayRequestDuration(); // Muestra la duración de la solicitud
         cfg.EnableDeepLinking(); // Enlaces para las operaciones y tag
         cfg.ShowExtensions(); // Muestra extensiones para visualizar los campos y valores para las operaciones, parámetros y esquemas 
