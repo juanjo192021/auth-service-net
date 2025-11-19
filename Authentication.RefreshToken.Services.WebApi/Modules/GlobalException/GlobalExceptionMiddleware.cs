@@ -26,6 +26,10 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
             {
                 await WriteResponseAsync(context, ex.Message, StatusCodes.Status401Unauthorized);
             }
+            catch (ConflictException ex)
+            {
+                await WriteResponseAsync(context, ex.Message, StatusCodes.Status409Conflict);
+            }
             catch (ValidationExceptionCustom ex)
             {
                 await WriteValidationResponseAsync(context,ex.Message, ex.Errors);
