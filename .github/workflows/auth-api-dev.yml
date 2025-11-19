@@ -9,6 +9,7 @@ on:
 env:
   DOTNET_VERSION: '9.x'
   PROJECT_PATH: Authentication.RefreshToken.Services.WebApi/Authentication.RefreshToken.Services.WebApi.csproj
+  TEST_PROJECT_PATH: Authentication.RefreshToken.UnitTest/Authentication.RefreshToken.UnitTest.csproj
   PUBLISH_DIR: publish_output
   AZURE_WEBAPP_NAME: auth-api-dev
 
@@ -34,6 +35,9 @@ jobs:
 
       - name: Build app 🚀
         run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+      
+      - name: Run Unit Tests 🧪
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-build --verbosity normal
 
       - name: Publish app 📰
         run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ env.PUBLISH_DIR }} --no-build

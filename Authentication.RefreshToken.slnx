@@ -18,4 +18,8 @@
   <Folder Name="/Services/">
     <Project Path="Authentication.RefreshToken.Services.WebApi/Authentication.RefreshToken.Services.WebApi.csproj" />
   </Folder>
+  <Folder Name="/Tests/" />
+  <Folder Name="/Tests/Unit/">
+    <Project Path="Authentication.RefreshToken.UnitTest/Authentication.RefreshToken.UnitTest.csproj" Id="9e082c72-0c2d-4e17-81cb-843e552a042f" />
+  </Folder>
 </Solution>
