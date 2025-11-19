@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
 {
-    internal class SignUpHandler : IRequestHandler<SignUpCommand, Response<AuthDto>>
+    public class SignUpHandler : IRequestHandler<SignUpCommand, Response<AuthDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
@@ -40,7 +40,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
             var userExists = await _unitOfWork.Users.GetByEmailAsync(request.Email);
                 
             if (userExists != null)
-                throw new NotFoundException($"User with email {request.Email} already exists.");
+                throw new ConflictException($"User with email {request.Email} already exists.");
 
             var newUser = _mapper.Map<User>(request);
             newUser.IsActive = true;
