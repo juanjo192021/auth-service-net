@@ -3,26 +3,32 @@ using Authentication.RefreshToken.Application.UseCases;
 using Authentication.RefreshToken.Infrastructure;
 using Authentication.RefreshToken.Persistence;
 using Authentication.RefreshToken.Persistence.Seed;
+using Authentication.RefreshToken.Services.WebApi.Modules.Cors;
 using Authentication.RefreshToken.Services.WebApi.Modules.GlobalException;
 using Authentication.RefreshToken.Services.WebApi.Modules.Middleware;
 using Authentication.RefreshToken.Services.WebApi.Modules.Swagger;
 using Authentication.RefreshToken.Services.WebApi.Modules.Versioning;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+}); ;
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddOpenApi();
-builder.Services.AddTransient<GlobalExceptionMiddleware>();
-
+// Dependencies Injection
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 
+// Custom Modules
 builder.Services.AddVersioning();
 builder.Services.AddSwagger();
+builder.Services.AddCors(builder.Configuration);
+builder.Services.AddTransient<GlobalExceptionMiddleware>();
 
 var app = builder.Build();
 
@@ -43,14 +49,15 @@ if (app.Environment.IsDevelopment())
                               description.GroupName.ToUpperInvariant());
         }
 
-        cfg.RoutePrefix = ""; // Prefijo de la ruta
-        cfg.DisplayRequestDuration(); // Muestra la duración de la solicitud
-        cfg.EnableDeepLinking(); // Enlaces para las operaciones y tag
-        cfg.ShowExtensions(); // Muestra extensiones para visualizar los campos y valores para las operaciones, parámetros y esquemas 
+        cfg.RoutePrefix = ""; // Prefix for accessing Swagger UI
+        cfg.DisplayRequestDuration();
+        cfg.EnableDeepLinking();
+        cfg.ShowExtensions();
     });
 }
 
 app.UseHttpsRedirection();
+app.UseCors("policyApiEcommerce");
 
 app.UseAuthentication();
 app.UseAuthorization();
