@@ -40,8 +40,6 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignIn
             var user = await _unitOfWork.Users.GetByEmailAsync(email)
                 ?? throw new NotFoundException($"Not found user with email {email}");
 
-            user.PasswordHash = _passwordHasher.Hash(password);
-
             bool validPassword = _passwordHasher.Verify(password, user.PasswordHash);
             if (!validPassword)
                 throw new UnauthorizedException("Invalid email or password.");
