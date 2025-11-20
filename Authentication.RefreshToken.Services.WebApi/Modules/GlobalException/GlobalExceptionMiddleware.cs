@@ -1,6 +1,8 @@
 ﻿using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
@@ -8,9 +10,13 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
     public class GlobalExceptionMiddleware : IMiddleware
     {
         private readonly ILogger<GlobalExceptionMiddleware> _logger;
-        public GlobalExceptionMiddleware(ILogger<GlobalExceptionMiddleware> logger)
+        private readonly JsonSerializerOptions _jsonOptions;
+        public GlobalExceptionMiddleware(
+            ILogger<GlobalExceptionMiddleware> logger,
+            IOptions<JsonOptions> jsonOptions)
         {
             _logger = logger;
+            _jsonOptions = jsonOptions.Value.SerializerOptions;
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -41,7 +47,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
             }
         }
 
-        private static async Task WriteResponseAsync(HttpContext context, string message , int statusCode)
+        private async Task WriteResponseAsync(HttpContext context, string message , int statusCode)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
@@ -50,10 +56,10 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
                 IsSuccess = false,
                 Message = message,
             };
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
         }
 
-        private static async Task WriteValidationResponseAsync(
+        private async Task WriteValidationResponseAsync(
             HttpContext context,
             string message,
             IEnumerable<BaseError> errors)
@@ -68,7 +74,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
                 Errors = errors
             };
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Common.Behaviours
             var failures = validationResults
                 .SelectMany(r => r.Errors)
                 .Where(f => f != null)
-                .GroupBy(f => f.PropertyName)
+                .GroupBy(f => ToCamelCase(f.PropertyName))
                 .Select(g => new BaseError()
                 {
                     PropertyMessage = g.Key,
@@ -43,6 +43,14 @@ namespace Authentication.RefreshToken.Application.UseCases.Common.Behaviours
             }
 
             return await next();
+        }
+
+        private static string ToCamelCase(string value)
+        {
+            if (string.IsNullOrEmpty(value) || char.IsLower(value[0]))
+                return value;
+
+            return char.ToLowerInvariant(value[0]) + value.Substring(1);
         }
     }
 }
