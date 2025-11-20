@@ -45,6 +45,8 @@ namespace Authentication.RefreshToken.Persistence.Repository
         {
             return await _context.Set<User>()
                 .AsNoTracking()
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
                 .SingleOrDefaultAsync(x => x.Email.Equals(email));
         }
 

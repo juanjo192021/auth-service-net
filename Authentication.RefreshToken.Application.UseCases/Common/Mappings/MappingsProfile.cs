@@ -14,7 +14,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Common.Mappings
                 .Map(dest => dest.Roles, src => src.UserRoles
                 .Where(ur => ur.IsAssigned)
                 .Select(ur => ur.Role.Name)
-                .ToList());
+                .ToList()).IgnoreNullValues(true);
 
             config.NewConfig<SignupDto, User>()
             .Map(dest => dest.PasswordHash, src => src.Password)
