@@ -1,0 +1,57 @@
+services:
+  api:
+    container_name: auth-api
+    build:
+      context: .
+      dockerfile: Authentication.RefreshToken.Services.WebApi/Dockerfile
+    working_dir: /src
+    ports:
+      # - "8080:8080"
+        - "7234:7234" 
+    volumes:
+      - ./:/src
+      - api_bin:/src/Authentication.RefreshToken.Services.WebApi/bin
+      - api_obj:/src/Authentication.RefreshToken.Services.WebApi/obj
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+      # Allowed Origins
+      AllowedOrigins__0: "${ALLOWED_ORIGIN_0}"
+      AllowedOrigins__1: "${ALLOWED_ORIGIN_1}"
+
+      # Connection String
+      ConnectionStrings__AuthRefreshTokenConnection: "${DB_CONNECTION}"
+
+      # DefaultAdmin
+      DefaultAdmin__Email: "${DEFAULT_ADMIN_EMAIL}"
+      DefaultAdmin__Password: "${DEFAULT_ADMIN_PASSWORD}"
+
+      # JWT
+      Jwt__Key: "${JWT_KEY}"
+      Jwt__Issuer: "${JWT_ISSUER}"
+      Jwt__Audience: "${JWT_AUDIENCE}"
+      Jwt__TokenExpiryMinutes: "${JWT_TOKEN_EXPIRY}"
+      Jwt__RefreshTokenExpiryDays: "${JWT_REFRESH_EXPIRY}"
+
+    # depends_on:
+    #   - sqlserver
+    restart: "no"
+
+  # sqlserver:
+  #   container_name: auth-sql
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     SA_PASSWORD: "P@ssw0rd1234"
+  #   ports:
+  #     # SQL Server estará expuesto en el puerto 14330 (host - PC)
+  #     # dentro del contenedor sigue siendo 1433
+  #     - "14330:1433"
+  #   volumes:
+  #     - sql_data:/var/opt/mssql
+  #   restart: "no"
+
+volumes:
+  # sql_data:
+  api_bin:
+  api_obj:
