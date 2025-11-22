@@ -79,17 +79,15 @@ namespace Authentication.RefreshToken.Persistence.Repository
 
         public async Task<Role?> UpdateAsync(Role entity)
         {
-            var existing = await _context.Roles.FindAsync(entity.Id);
+            var existing = await _context.Roles
+                .Include(r => r.UserRoles!)
+                .ThenInclude(ur => ur.User)
+                .FirstOrDefaultAsync(x => x.Id.Equals(entity.Id));
             if (existing is null) return null;
 
             _context.Entry(existing).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
             return existing;
         }
-
-        //public async Task<Role?> ByNameAsync(string roleName)
-        //{
-        //    
-        //}
     }
 }

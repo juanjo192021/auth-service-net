@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Role.Commands.UpdateRole
 {
-    public class UpdateRoleHandler : IRequestHandler<UpdateRoleCommand ,SuccessResponse<RoleDto>>
+    public class UpdateRoleHandler : IRequestHandler<UpdateRoleCommand, SuccessResponse<RoleDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -21,17 +21,18 @@ namespace Authentication.RefreshToken.Application.UseCases.Role.Commands.UpdateR
         public async Task<SuccessResponse<RoleDto>> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
         {
             var response = new SuccessResponse<RoleDto>();
-            var roleExists = await _unitOfWork.Roles.GetByNameAsync(request.Name)
-                ?? throw new ConflictException($"The role {request.Name} can't be updated because it already exists.");
+            var roleExists = await _unitOfWork.Roles.GetByNameAsync(request.Name);
+            if (roleExists != null && roleExists.Id != request.Id)
+                throw new ConflictException($"The role {request.Name} can't be updated because it already exists.");
 
             var roleMapped = _mapper.Map<Domain.Entities.Role>(request);
             var roleUpdated = await _unitOfWork.Roles.UpdateAsync(roleMapped);
             if (roleUpdated == null)
-                throw new Exception("Failed to update role");
+                throw new NotFoundException($"Role with ID {request.Id} not found.");
 
             response.Data = _mapper.Map<RoleDto>(roleUpdated);
             response.Message = "Role updated sucessfuly!";
-            
+
             return response;
         }
     }
