@@ -9,7 +9,7 @@ namespace Authentication.RefreshToken.Domain.Entities
         public bool IsAssigned { get; set; }
 
         // Propiedades de Navegación
-        public virtual User User { get; set; }
-        public virtual Role Role { get; set; }
+        public virtual User User { get; set; } = null!;
+        public virtual Role Role { get; set; } = null!;
     }
 }

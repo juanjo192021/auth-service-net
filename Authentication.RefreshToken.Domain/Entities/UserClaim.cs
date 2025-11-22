@@ -6,11 +6,11 @@ namespace Authentication.RefreshToken.Domain.Entities
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string ClaimType { get; set; }
-        public string ClaimValue { get; set; }
+        public string ClaimType { get; set; } = null!;
+        public string ClaimValue { get; set; } = null!;
         public bool IsEnabled { get; set; }
 
         // Propiedad de Navegación
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
     }
 }

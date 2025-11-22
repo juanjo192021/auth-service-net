@@ -1,7 +1,7 @@
 ﻿using Authentication.RefreshToken.Application.Dto.User;
 using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
-using Authentication.RefreshToken.Application.UseCases.Auth.Command.SignIn;
+using Authentication.RefreshToken.Application.UseCases.Authentication.Command.Login;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Domain.Entities;
 using FluentAssertions;
@@ -20,12 +20,12 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         private readonly Mock<IRefreshTokenService> _refreshTokenService = new();
         private readonly Mock<IMapper> _mapper = new();
 
-        private SignInHandler CreateHandler()
+        private LoginHandler CreateHandler()
         {
             _unitOfWork.Setup(u => u.Users).Returns(_userRepository.Object);
             _unitOfWork.Setup(u => u.UserRefreshTokens).Returns(_refreshRepo.Object);
 
-            return new SignInHandler(
+            return new LoginHandler(
                 _unitOfWork.Object,
                 _passwordHasher.Object,
                 _jwtService.Object,
@@ -39,7 +39,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenUserEmailNotFound_ShouldThrowValidationException()
         {
             // Arrange
-            var command = new SignInCommand { Email = "invalid@gmail.com", Password = "1234" };
+            var command = new LoginCommand { Email = "invalid@gmail.com", Password = "1234" };
 
             _userRepository
                 .Setup(r => r.GetByEmailAsync(command.Email))
@@ -66,7 +66,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
                 PasswordHash = "hashed"
             };
 
-            var command = new SignInCommand { Email = user.Email, Password = "wrong-password" };
+            var command = new LoginCommand { Email = user.Email, Password = "wrong-password" };
 
             _userRepository
                 .Setup(r => r.GetByEmailAsync(user.Email))
@@ -101,7 +101,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
                 PasswordHash = "hashed"
             };
 
-            var command = new SignInCommand { Email = user.Email, Password = "wrong-password" };
+            var command = new LoginCommand { Email = user.Email, Password = "wrong-password" };
 
             _userRepository
                 .Setup(r => r.GetByEmailAsync(user.Email))
@@ -138,7 +138,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
                 PasswordHash = "hashed"
             };
 
-            var command = new SignInCommand { Email = user.Email, Password = "wrong-password" };
+            var command = new LoginCommand { Email = user.Email, Password = "wrong-password" };
 
             _userRepository
                 .Setup(r => r.GetByEmailAsync(user.Email))
@@ -178,7 +178,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
                 PasswordHash = "hashed"
             };
 
-            var command = new SignInCommand { Email = user.Email, Password = "1234" };
+            var command = new LoginCommand { Email = user.Email, Password = "1234" };
 
             _userRepository.Setup(r => r.GetByEmailAsync(user.Email)).ReturnsAsync(user);
 

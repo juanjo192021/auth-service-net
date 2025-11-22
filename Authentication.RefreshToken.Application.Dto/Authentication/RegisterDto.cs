@@ -1,6 +1,6 @@
-﻿namespace Authentication.RefreshToken.Application.Dto.Auth
+﻿namespace Authentication.RefreshToken.Application.Dto.Authentication
 {
-    public class SignupDto
+    public sealed record class RegisterDto
     {
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;

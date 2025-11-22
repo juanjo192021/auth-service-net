@@ -1,6 +1,6 @@
 ﻿using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
-using Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp;
+using Authentication.RefreshToken.Application.UseCases.Authentication.Command.Register;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Domain.Entities;
 using Authentication.RefreshToken.Domain.Enums;
@@ -22,14 +22,14 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         private readonly Mock<IRefreshTokenService> _refreshTokenService = new();
         private readonly Mock<IMapper> _mapper = new();
 
-        private SignUpHandler CreateHandler()
+        private RegisterHandler CreateHandler()
         {
             _unitOfWork.Setup(u => u.Users).Returns(_userRepository.Object);
             _unitOfWork.Setup(u => u.Roles).Returns(_rolesRepository.Object);
             _unitOfWork.Setup(u => u.UserRoles).Returns(_userRoleRepo.Object);
             _unitOfWork.Setup(u => u.UserRefreshTokens).Returns(_refreshRepo.Object);
 
-            return new SignUpHandler(
+            return new RegisterHandler(
                 _unitOfWork.Object,
                 _passwordHasher.Object,
                 _jwtService.Object,
@@ -43,7 +43,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handle_WhenUserEmailAlreadyExists_ShouldThrowValidationException()
         {
             // Arrange
-            var command = new SignUpCommand { Email = "test@gmail.com", Password = "123456" };
+            var command = new RegisterCommand { Email = "test@gmail.com", Password = "123456" };
 
             var userExisting = new User { Id = 1, Email = "test@gmail.com" };
 
@@ -68,7 +68,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenBasicRolNotFound_ShouldThrowValidationException()
         {
             // Arrange
-            var command = new SignUpCommand
+            var command = new RegisterCommand
             {
                 Email = "test@gmail.com",
                 Password = "123456",
@@ -111,7 +111,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenUserRoleCannotBeAssigned_ShouldThrowException()
         {
             // Arrange
-            var command = new SignUpCommand
+            var command = new RegisterCommand
             {
                 Email = "test@gmail.com",
                 Password = "123456",
@@ -161,7 +161,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenUserNotFoundAfterCreated_ShouldThrowException()
         {
             // Arrange
-            var command = new SignUpCommand
+            var command = new RegisterCommand
             {
                 Email = "test@gmail.com",
                 Password = "123456",
@@ -213,7 +213,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenTokenCantBeGenerated_ShouldThrowException()
         {
             // Arrange
-            var command = new SignUpCommand
+            var command = new RegisterCommand
             {
                 Email = "test@gmail.com",
                 Password = "123456",
@@ -268,7 +268,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenRefreshTokenCantBeGenerated_ShouldThrowException()
         {
             // Arrange
-            var command = new SignUpCommand
+            var command = new RegisterCommand
             {
                 Email = "test@gmail.com",
                 Password = "123456",
@@ -326,7 +326,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handle_ValidCommand_ShouldCreateUserSuccessfully()
         {
             // Arrange
-            var command = new SignUpCommand
+            var command = new RegisterCommand
             {
                 Email = "test@gmail.com",
                 Password = "123456",

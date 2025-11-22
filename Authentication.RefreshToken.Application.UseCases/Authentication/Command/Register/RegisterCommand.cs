@@ -1,10 +1,10 @@
-﻿using Authentication.RefreshToken.Application.Dto.Auth;
+﻿using Authentication.RefreshToken.Application.Dto.Authentication;
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
 
-namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
+namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Register
 {
-    public sealed record class SignUpCommand : IRequest<Response<AuthDto>>
+    public sealed record class RegisterCommand : IRequest<SuccessResponse<AuthenticationDto>>
     {
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;

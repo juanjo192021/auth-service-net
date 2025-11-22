@@ -1,5 +1,4 @@
-﻿using Authentication.RefreshToken.Application.Dto.Auth;
-using Authentication.RefreshToken.Application.Dto.User;
+﻿using Authentication.RefreshToken.Application.Dto.Authentication;
 using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
@@ -9,9 +8,9 @@ using Authentication.RefreshToken.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 
-namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
+namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Register
 {
-    public class SignUpHandler : IRequestHandler<SignUpCommand, Response<AuthDto>>
+    public class RegisterHandler : IRequestHandler<RegisterCommand, SuccessResponse<AuthenticationDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
@@ -19,7 +18,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IMapper _mapper;
 
-        public SignUpHandler(
+        public RegisterHandler(
             IUnitOfWork unitOfWork, 
             IPasswordHasher passwordHasher, 
             IJwtService jwtService, 
@@ -33,9 +32,9 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
             _mapper = mapper;
         }
 
-        public async Task<Response<AuthDto>> Handle(SignUpCommand request, CancellationToken cancellationToken)
+        public async Task<SuccessResponse<AuthenticationDto>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var response = new Response<AuthDto>();
+            var response = new SuccessResponse<AuthenticationDto>();
 
             var userExists = await _unitOfWork.Users.GetByEmailAsync(request.Email);
                 
@@ -75,15 +74,14 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
 
             //await _unitOfWork.CommitAsync();
 
-            response.IsSuccess = true;
-            response.Data = new AuthDto
+            response.Data = new AuthenticationDto
             {
                 Tokens = new TokenInfoDto
                 {
                     AccessToken = token,
                     RefreshToken = refreshToken
                 },
-                User = _mapper.Map<UserDto>(user)
+                User = _mapper.Map<UserInfoDto>(user)
             };
             response.Message = "User registered successfully.";
 

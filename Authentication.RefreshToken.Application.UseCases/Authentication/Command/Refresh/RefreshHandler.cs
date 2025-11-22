@@ -1,19 +1,19 @@
-﻿using Authentication.RefreshToken.Application.Dto.Auth;
+﻿using Authentication.RefreshToken.Application.Dto.Authentication;
 using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
 
-namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.RefreshToken
+namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Refresh
 {
-    public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Response<TokenInfoDto>>
+    public class RefreshHandler : IRequestHandler<RefreshCommand, SuccessResponse<TokenInfoDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
         private readonly IRefreshTokenService _refreshTokenService;
 
-        public RefreshTokenHandler(
+        public RefreshHandler(
             IUnitOfWork unitOfWork, 
             IJwtService jwtService, 
             IRefreshTokenService refreshTokenService)
@@ -23,9 +23,9 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.RefreshT
             _refreshTokenService = refreshTokenService;
         }
 
-        public async Task<Response<TokenInfoDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+        public async Task<SuccessResponse<TokenInfoDto>> Handle(RefreshCommand request, CancellationToken cancellationToken)
         {
-            var response = new Response<TokenInfoDto>();
+            var response = new SuccessResponse<TokenInfoDto>();
             
             var jwtId = _jwtService.GetJwtId(request.AccessToken);
             var resetTokenHash = _refreshTokenService.ComputeSha256(request.RefreshToken);
@@ -84,7 +84,6 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.RefreshT
 
             await _unitOfWork.UserRefreshTokens.CreateAsync(user.Id, jwtIdNew, newRefreshTokenHash);
 
-            response.IsSuccess = true;
             response.Data = new TokenInfoDto
             {
                 AccessToken = newToken,

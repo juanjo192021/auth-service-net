@@ -1,15 +1,10 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignUp
+namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Register
 {
-    public class SignUpValidator : AbstractValidator<SignUpCommand>
+    public class RegisterValidator : AbstractValidator<RegisterCommand>
     {
-        public SignUpValidator()
+        public RegisterValidator()
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("The email field is required.")

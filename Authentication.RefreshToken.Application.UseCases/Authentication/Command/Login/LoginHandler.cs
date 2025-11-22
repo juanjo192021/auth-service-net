@@ -1,5 +1,4 @@
-﻿using Authentication.RefreshToken.Application.Dto.Auth;
-using Authentication.RefreshToken.Application.Dto.User;
+﻿using Authentication.RefreshToken.Application.Dto.Authentication;
 using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
@@ -7,9 +6,9 @@ using Authentication.RefreshToken.Concerns.Common;
 using MapsterMapper;
 using MediatR;
 
-namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignIn
+namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Login
 {
-    public class SignInHandler : IRequestHandler<SignInCommand, Response<AuthDto>>
+    public class LoginHandler : IRequestHandler<LoginCommand, SuccessResponse<AuthenticationDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
@@ -17,7 +16,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignIn
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IMapper _mapper;
 
-        public SignInHandler(IUnitOfWork unitOfWork, 
+        public LoginHandler(IUnitOfWork unitOfWork, 
             IPasswordHasher passwordHasher, 
             IJwtService jwtService, 
             IRefreshTokenService refreshTokenService, 
@@ -30,9 +29,9 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignIn
             _mapper = mapper;
         }
 
-        public async Task<Response<AuthDto>> Handle(SignInCommand request, CancellationToken cancellationToken)
+        public async Task<SuccessResponse<AuthenticationDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var response = new Response<AuthDto>();
+            var response = new SuccessResponse<AuthenticationDto>();
             
             var email = request.Email;
             var password = request.Password;
@@ -55,15 +54,14 @@ namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.SignIn
 
             await _unitOfWork.UserRefreshTokens.CreateAsync(user.Id, jwtId, refreshTokenHash);
 
-            response.IsSuccess = true;
-            response.Data = new AuthDto
+            response.Data = new AuthenticationDto
             {
                 Tokens = new TokenInfoDto
                 {
                     AccessToken = token,
                     RefreshToken = refreshToken
                 },
-                User = _mapper.Map<UserDto>(user)
+                User = _mapper.Map<UserInfoDto>(user)
             };
             response.Message = "User signed in successfully.";
 

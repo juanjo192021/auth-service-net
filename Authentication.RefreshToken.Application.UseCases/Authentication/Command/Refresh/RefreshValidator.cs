@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Authentication.RefreshToken.Application.UseCases.Auth.Command.RefreshToken
+namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Refresh
 {
-    public class RefreshTokenValidator : AbstractValidator<RefreshTokenCommand>
+    public class RefreshValidator : AbstractValidator<RefreshCommand>
     {
-        public RefreshTokenValidator()
+        public RefreshValidator()
         {
             RuleFor(x => x.AccessToken)
                 .NotEmpty().WithMessage("The access token field is required.")

@@ -5,10 +5,10 @@ namespace Authentication.RefreshToken.Domain.Entities
     public class User : BaseAuditableEntity
     {
         public int Id { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Email { get; set; } = null!;
+        public string PasswordHash { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
         public string? ImageUrl { get; set; }
         public string? DocumentType { get; set; }
         public string? DocumentNumber { get; set; }
@@ -21,8 +21,8 @@ namespace Authentication.RefreshToken.Domain.Entities
         public bool IsBlocked { get; set; }
 
         // Propiedades de Navegación (para relaciones)
-        public virtual ICollection<UserRole> UserRoles { get; set; }
-        public virtual ICollection<UserClaim> UserClaims { get; set; }
-        public virtual ICollection<UserRefreshToken> UserRefreshTokens { get; set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; } = null!;
+        public virtual ICollection<UserClaim>? UserClaims { get; set; } 
+        public virtual ICollection<UserRefreshToken> UserRefreshTokens { get; set; } = null!;
     }
 }

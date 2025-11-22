@@ -1,6 +1,5 @@
 ﻿using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
@@ -38,7 +37,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
             }
             catch (ValidationExceptionCustom ex)
             {
-                await WriteValidationResponseAsync(context,ex.Message, ex.Errors);
+                await WriteValidationResponseAsync(context,ex.Message, ex.Errors!);
             }
             catch (Exception ex)
             {
@@ -51,9 +50,8 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
-            var response = new Response<object>
+            var response = new ErrorResponse
             {
-                IsSuccess = false,
                 Message = message,
             };
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
@@ -67,9 +65,8 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-            var response = new Response<object>
+            var response = new ErrorResponse
             {
-                IsSuccess = false,
                 Message = message,
                 Errors = errors
             };

@@ -1,6 +1,6 @@
 ﻿using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
-using Authentication.RefreshToken.Application.UseCases.Auth.Command.RefreshToken;
+using Authentication.RefreshToken.Application.UseCases.Authentication.Command.Refresh;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
 using Authentication.RefreshToken.Domain.Entities;
@@ -17,12 +17,12 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         private readonly Mock<IJwtService> _jwtService = new();
         private readonly Mock<IRefreshTokenService> _refreshTokenService = new();
 
-        private RefreshTokenHandler CreateHandler()
+        private RefreshHandler CreateHandler()
         {
             _unitOfWork.Setup(u => u.Users).Returns(_userRepository.Object);
             _unitOfWork.Setup(u => u.UserRefreshTokens).Returns(_refreshRepo.Object);
 
-            return new RefreshTokenHandler(
+            return new RefreshHandler(
                 _unitOfWork.Object,
                 _jwtService.Object,
                 _refreshTokenService.Object
@@ -34,7 +34,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenRefreshTokenNotExist_ShouldThrowException()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "valid-access-token",
                 RefreshToken = "invalid-refresh-token"
@@ -73,7 +73,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenRefreshTokenIsRevoked_ShouldThrowException()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "valid-access-token",
                 RefreshToken = "valid-refresh-token"
@@ -123,7 +123,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenJwtIdDoesNotMatchStoredJwtId_ShouldThrowException()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "invalid-access-token",
                 RefreshToken = "valid-refresh-token"
@@ -174,7 +174,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenRefreshTokenIsExpired_ShouldThrowException()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "valid-access-token",
                 RefreshToken = "valid-refresh-token"
@@ -225,7 +225,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenTokenHasNotExpired_ShouldThrowException()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "valid-access-token",
                 RefreshToken = "valid-refresh-token"
@@ -276,7 +276,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenUserIdOfJwtIdIsNotValid_ShouldThrowException()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "valid-format-token",
                 RefreshToken = "valid-refresh-token"
@@ -341,7 +341,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenUserIdOfJwtIdNotFound_ShouldThrowException()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "valid-format-token",
                 RefreshToken = "valid-refresh-token"
@@ -412,7 +412,7 @@ namespace Authentication.RefreshToken.UnitTest.Auth
         public async Task Handler_WhenRefreshTokenIsValid_ShouldReturnNewTokens()
         {
             // Arrange
-            var command = new RefreshTokenCommand
+            var command = new RefreshCommand
             {
                 AccessToken = "valid-access-token",
                 RefreshToken = "valid-refresh-token"
