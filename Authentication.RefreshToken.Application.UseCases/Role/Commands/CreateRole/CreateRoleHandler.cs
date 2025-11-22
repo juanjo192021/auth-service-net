@@ -22,7 +22,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Role.Commands.CreateR
         {
             var response = new SuccessResponse<RoleDto>();
             var roleExists = await _unitOfWork.Roles.GetByNameAsync(request.Name)
-                ?? throw new ConflictException($"Role {request.Name} exists");
+                ?? throw new ConflictException($"The role {request.Name} can't be created because it already exists.");
             var roleMapped = _mapper.Map<Domain.Entities.Role>(request);
             var roleCreated = await _unitOfWork.Roles.CreateAsync(roleMapped)
                 ?? throw new Exception("Error creating role");

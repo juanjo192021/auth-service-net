@@ -1,6 +1,7 @@
 ﻿using Authentication.RefreshToken.Application.Dto.Authentication;
 using Authentication.RefreshToken.Application.Dto.Role;
 using Authentication.RefreshToken.Application.UseCases.Role.Commands.CreateRole;
+using Authentication.RefreshToken.Application.UseCases.Role.Commands.UpdateRole;
 using Authentication.RefreshToken.Domain.Entities;
 using Mapster;
 
@@ -26,13 +27,15 @@ namespace Authentication.RefreshToken.Application.UseCases.Common.Mappings
             config.NewConfig<CreateRoleCommand, Domain.Entities.Role>()
                 .IgnoreNullValues(true);
 
+            config.NewConfig<UpdateRoleCommand, Domain.Entities.Role>()
+                .IgnoreNullValues(true);
+
             config.NewConfig<Domain.Entities.Role, RoleDto>()
                 .Map(dest => dest.Users, src => src.UserRoles!
                 .Where(ur => ur.IsAssigned)
                 .Select(ur => ur.User.FirstName + " " + ur.User.LastName)
                 .ToList())
                 .IgnoreNullValues(true);
-
         }
     }
 }
