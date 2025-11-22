@@ -10,8 +10,21 @@ services:
         - "7234:7234" 
     volumes:
       - ./:/src
+      # WebApi
       - api_bin:/src/Authentication.RefreshToken.Services.WebApi/bin
       - api_obj:/src/Authentication.RefreshToken.Services.WebApi/obj
+
+      # UseCases
+      - usecases_bin:/src/Authentication.RefreshToken.Application.UseCases/bin
+      - usecases_obj:/src/Authentication.RefreshToken.Application.UseCases/obj
+
+      # Infrastructure
+      - infra_bin:/src/Authentication.RefreshToken.Infrastructure/bin
+      - infra_obj:/src/Authentication.RefreshToken.Infrastructure/obj
+
+      # Persistence
+      - persistence_bin:/src/Authentication.RefreshToken.Persistence/bin
+      - persistence_obj:/src/Authentication.RefreshToken.Persistence/obj
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
@@ -55,3 +68,9 @@ volumes:
   # sql_data:
   api_bin:
   api_obj:
+  usecases_bin:
+  usecases_obj:
+  infra_bin:
+  infra_obj:
+  persistence_bin:
+  persistence_obj:
