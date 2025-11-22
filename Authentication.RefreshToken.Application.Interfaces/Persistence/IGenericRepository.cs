@@ -1,4 +1,6 @@
-﻿namespace Authentication.RefreshToken.Application.Interfaces.Persistence
+﻿using Authentication.RefreshToken.Domain.Entities;
+
+namespace Authentication.RefreshToken.Application.Interfaces.Persistence
 {
     public interface IGenericRepository<T> where T : class
     {

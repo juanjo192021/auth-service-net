@@ -49,7 +49,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Authentication.Comman
             var userCreated = await _unitOfWork.Users.CreateAsync(newUser)
                 ?? throw new Exception("Failed to create user.");
 
-            var basicRole = await _unitOfWork.Roles.FindByNameAsync(DefaultRoles.BasicUser.Name)
+            var basicRole = await _unitOfWork.Roles.GetByNameAsync(DefaultRoles.BasicUser.Name)
                 ?? throw new NotFoundException("Default BASIC_USER role was not found.");
 
             var added = await _unitOfWork.UserRoles.CreateAsync(userCreated.Id, new List<int> { basicRole.Id });

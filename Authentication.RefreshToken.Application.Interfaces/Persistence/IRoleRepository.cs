@@ -2,8 +2,9 @@
 
 namespace Authentication.RefreshToken.Application.Interfaces.Persistence
 {
-    public interface IRoleRepository
+    public interface IRoleRepository : IGenericRepository<Role>
     {
-        Task<Role?> FindByNameAsync(string roleName);
+        Task<Role?> GetByNameAsync(string roleName);
+        Task<int> CountAsync();
     }
 }
