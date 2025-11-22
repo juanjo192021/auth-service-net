@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRoleQuery
+namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole
 {
     public class GetAllRoleValidator : AbstractValidator<GetAllRoleQuery>
     {
