@@ -45,6 +45,21 @@ namespace Authentication.RefreshToken.Persistence.Configurations
                    .WithMany(r => r.UserRoles)
                    .HasForeignKey(ur => ur.RoleId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.UpdateByUser)
+                .WithMany()
+                .HasForeignKey(r => r.UpdatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.DeactivatedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.DeactivatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

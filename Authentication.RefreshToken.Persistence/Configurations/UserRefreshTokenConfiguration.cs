@@ -35,7 +35,7 @@ namespace Authentication.RefreshToken.Persistence.Configurations
             builder.HasOne(rt => rt.User)
                    .WithMany(u => u.UserRefreshTokens)
                    .HasForeignKey(rt => rt.UserId)
-                   .OnDelete(DeleteBehavior.Cascade); // si borras usuario, borra tokens
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

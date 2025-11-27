@@ -47,7 +47,22 @@ namespace Authentication.RefreshToken.Persistence.Configurations
             builder.HasOne(rc => rc.Role)
                    .WithMany(r => r.RoleClaims)
                    .HasForeignKey(rc => rc.RoleId)
-                   .OnDelete(DeleteBehavior.Cascade); // si borras rol, borra claims
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(r => r.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.UpdateByUser)
+                .WithMany()
+                .HasForeignKey(r => r.UpdatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.DeactivatedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.DeactivatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

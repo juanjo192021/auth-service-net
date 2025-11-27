@@ -47,7 +47,22 @@ namespace Authentication.RefreshToken.Persistence.Configurations
             builder.HasOne(uc => uc.User)
                    .WithMany(u => u.UserClaims)
                    .HasForeignKey(uc => uc.UserId)
-                   .OnDelete(DeleteBehavior.Cascade); // si borras usuario, borra claims
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(r => r.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.UpdateByUser)
+                .WithMany()
+                .HasForeignKey(r => r.UpdatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.DeactivatedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.DeactivatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

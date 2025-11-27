@@ -4,6 +4,7 @@ using Authentication.RefreshToken.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Authentication.RefreshToken.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251123161425_AddPermissionScheme")]
+    partial class AddPermissionScheme
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,9 +34,7 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
@@ -78,18 +79,12 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
                     b.HasIndex("ParentId");
 
                     b.HasIndex("PermissionId");
 
                     b.HasIndex("Route")
                         .IsUnique();
-
-                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("Menus", (string)null);
                 });
@@ -138,14 +133,8 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("Permissions", (string)null);
                 });
@@ -194,14 +183,8 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("Roles", (string)null);
                 });
@@ -254,13 +237,7 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("RoleClaims", (string)null);
                 });
@@ -279,25 +256,16 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreatedByUserId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("DeactivatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("DeactivatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DeactivatedByUserId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<int?>("UpdateByUserId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -307,13 +275,7 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("RoleId", "PermissionId");
 
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("DeactivatedByUserId");
-
                     b.HasIndex("PermissionId");
-
-                    b.HasIndex("UpdateByUserId");
 
                     b.ToTable("RolePermissions", (string)null);
                 });
@@ -408,18 +370,12 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
                     b.HasIndex("DocumentNumber")
                         .IsUnique()
                         .HasFilter("[DocumentNumber] IS NOT NULL");
 
                     b.HasIndex("Email")
                         .IsUnique();
-
-                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -472,12 +428,6 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
-                    b.HasIndex("UpdatedBy");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("UserClaims", (string)null);
@@ -492,9 +442,7 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
@@ -518,13 +466,7 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("UserId", "PermissionId");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
                     b.HasIndex("PermissionId");
-
-                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("UserPermissions", (string)null);
                 });
@@ -605,29 +547,13 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Menu", b =>
                 {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.Menu", null)
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
@@ -638,110 +564,22 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
                     b.Navigation("Permission");
-
-                    b.Navigation("UpdateByUser");
-                });
-
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Permission", b =>
-                {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
-                    b.Navigation("UpdateByUser");
-                });
-
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Role", b =>
-                {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
-                    b.Navigation("UpdateByUser");
                 });
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.RoleClaim", b =>
                 {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.Role", "Role")
                         .WithMany("RoleClaims")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
                     b.Navigation("Role");
-
-                    b.Navigation("UpdateByUser");
                 });
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.RolePermission", b =>
                 {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId");
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedByUserId");
-
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.Permission", "Permission")
                         .WithMany("RolePermissions")
                         .HasForeignKey("PermissionId")
@@ -754,99 +592,29 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdateByUserId");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
-
-                    b.Navigation("UpdateByUser");
-                });
-
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.User", b =>
-                {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
-                    b.Navigation("UpdateByUser");
                 });
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.UserClaim", b =>
                 {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "User")
                         .WithMany("UserClaims")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
-                    b.Navigation("UpdateByUser");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.UserPermission", b =>
                 {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.Permission", "Permission")
                         .WithMany("UserPermissions")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "User")
                         .WithMany("UserPermissions")
@@ -854,13 +622,7 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
                     b.Navigation("Permission");
-
-                    b.Navigation("UpdateByUser");
 
                     b.Navigation("User");
                 });
@@ -878,26 +640,11 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.UserRole", b =>
                 {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "User")
                         .WithMany("UserRoles")
@@ -905,13 +652,7 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
                     b.Navigation("Role");
-
-                    b.Navigation("UpdateByUser");
 
                     b.Navigation("User");
                 });

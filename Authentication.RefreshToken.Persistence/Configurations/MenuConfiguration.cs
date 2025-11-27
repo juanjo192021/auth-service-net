@@ -4,25 +4,30 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Authentication.RefreshToken.Persistence.Configurations
 {
-    public class RoleConfiguration : IEntityTypeConfiguration<Role>
+    public class MenuConfiguration : IEntityTypeConfiguration<Menu>
     {
-        public void Configure(EntityTypeBuilder<Role> builder)
+        public void Configure(EntityTypeBuilder<Menu> builder)
         {
-            builder.ToTable("Roles");
+            builder.ToTable("Menus");
 
-            builder.HasKey(r => r.Id);
+            builder.HasKey(m => m.Id);
 
-            builder.Property(r => r.Name)
+            builder.Property(m => m.Title)
                    .IsRequired()
-                   .HasMaxLength(50);
+                   .HasMaxLength(100);
 
-            builder.HasIndex(r => r.Name)
+            builder.Property(m => m.Route)
+                   .IsRequired()
+                   .HasMaxLength(200);
+
+            builder.HasIndex(m => m.Route)
                    .IsUnique();
 
-            builder.Property(r => r.Description)
-                   .HasMaxLength(300);
+            builder.Property(m => m.Order)
+                   .IsRequired()
+                   .HasDefaultValue(0);
 
-            builder.Property(r => r.IsActive)
+            builder.Property(m => m.IsActive)
                    .IsRequired()
                    .HasDefaultValue(true);
 
@@ -46,22 +51,15 @@ namespace Authentication.RefreshToken.Persistence.Configurations
                    .IsRequired(false);
 
             // Relaciones
-            // UserRoles (uno a muchos)
-            builder.HasMany(r => r.UserRoles)
-                   .WithOne(ur => ur.Role)
-                   .HasForeignKey(ur => ur.RoleId)
+            builder.HasOne(m => m.Permission)
+                   .WithMany()
+                   .HasForeignKey(m => m.PermissionId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // RoleClaims (uno a muchos)
-            builder.HasMany(r => r.RoleClaims)
-                   .WithOne(rc => rc.Role)
-                   .HasForeignKey(rc => rc.RoleId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(r => r.RolePermissions)
-                .WithOne(rp => rp.Role)
-                .HasForeignKey(rp => rp.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(m => m.Children)
+                   .WithOne()
+                   .HasForeignKey(m => m.ParentId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(r => r.CreatedByUser)
                 .WithMany()
@@ -77,7 +75,6 @@ namespace Authentication.RefreshToken.Persistence.Configurations
                 .WithMany()
                 .HasForeignKey(r => r.DeactivatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }
