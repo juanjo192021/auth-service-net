@@ -2,8 +2,8 @@
 
 namespace Authentication.RefreshToken.Application.Interfaces.Persistence
 {
-    public interface IUserRoleRepository
+    public interface IMenuRepository : IGenericRepository<Menu>
     {
-        Task<List<UserRole>> AssignRolesAsync(int userId, List<int> roleIds);
+        Task<bool> IsRouteUniqueAsync(string route);
     }
 }

@@ -2,9 +2,8 @@
 
 namespace Authentication.RefreshToken.Application.Interfaces.Persistence
 {
-    public interface IRoleRepository : IGenericRepository<Role>
+    public interface IPermissionRepository : IGenericRepository<Permission>
     {
         Task<bool> IsNameUniqueAsync(string name);
-        Task<Role?> GetByNameAsync(string name);
     }
 }

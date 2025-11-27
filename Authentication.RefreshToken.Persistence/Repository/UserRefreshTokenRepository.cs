@@ -19,7 +19,7 @@ namespace Authentication.RefreshToken.Persistence.Repository
             _context = context;
             _jwtSettings = jwtSettings.Value;
         }
-        public async Task<string> CreateAsync(int userId, string token, string refreshToken)
+        public async Task<UserRefreshToken?> CreateAsync(int userId, string token, string refreshToken)
         {
             var now = DateTime.UtcNow;
 
@@ -34,22 +34,21 @@ namespace Authentication.RefreshToken.Persistence.Repository
             };
 
             await _context.UserRefreshTokens.AddAsync(userRefreshToken);
-            await _context.SaveChangesAsync();
 
-            return refreshToken;
+            return userRefreshToken;
         }
 
-        public async Task<UserRefreshToken?> FindByRefreshTokenAsync(string refreshToken)
+        public async Task<UserRefreshToken?> GetByRefreshTokenHashAsync(string refreshToken)
         {
             return await _context.UserRefreshTokens
-                .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.RefreshTokenHash == refreshToken);
         }
 
-        public async Task UpdateAsync(UserRefreshToken userRefreshToken)
+        public async Task<UserRefreshToken?> UpdateAsync(UserRefreshToken entity)
         {
-            _context.UserRefreshTokens.Update(userRefreshToken);
-            await _context.SaveChangesAsync();
+            
+            _context.UserRefreshTokens.Update(entity);
+            return await Task.FromResult<UserRefreshToken?>(entity);
         }
     }
 }

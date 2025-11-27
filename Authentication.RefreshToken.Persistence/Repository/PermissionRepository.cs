@@ -5,29 +5,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.RefreshToken.Persistence.Repository
 {
-    public class RoleRepository : IRoleRepository
+    public class PermissionRepository : IPermissionRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public RoleRepository(ApplicationDbContext context)
+        public PermissionRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public async Task<int> CountAsync()
         {
-            return await _context.Roles.CountAsync();
+            return await _context.Permissions.CountAsync();
         }
 
-        public async Task<Role?> CreateAsync(Role entity)
+        public async Task<Permission?> CreateAsync(Permission entity)
         {
-            await _context.Roles.AddAsync(entity);
+            await _context.Permissions.AddAsync(entity);
             return entity;
         }
 
         public async Task<bool> DeactivateAsync(int id)
         {
-            var entity = await _context.Roles
+            var entity = await _context.Permissions
                  .SingleOrDefaultAsync(x => x.Id.Equals(id));
 
             if (entity == null) return false;
@@ -37,14 +37,11 @@ namespace Authentication.RefreshToken.Persistence.Repository
             return true;
         }
 
-        public async Task<IEnumerable<Role>> GetAllAsync(int pageNumber, int pageSize, string search)
+        public async Task<IEnumerable<Permission>> GetAllAsync(int pageNumber, int pageSize, string search)
         {
-            IQueryable<Role> query = _context.Roles
-                .Include(r => r.UserRoles!)
-                .ThenInclude(ur => ur.User)
-                .Include(r => r.CreatedByUser)
-                .Include(r => r.UpdateByUser)
-                .Include(r => r.DeactivatedByUser);
+            IQueryable<Permission> query = _context.Permissions;
+                //.Include(r => r.UserRoles!)
+                //.ThenInclude(ur => ur.User);
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -59,39 +56,34 @@ namespace Authentication.RefreshToken.Persistence.Repository
             return data;
         }
 
-        public async Task<Role?> GetByIdAsync(int id)
+        public async Task<Permission?> GetByIdAsync(int id)
         {
-            return await _context.Roles
-                .Include(r => r.UserRoles!)
-                .ThenInclude(ur => ur.User)
+            return await _context.Permissions
+                //.Include(r => r.UserRoles!)
+                //.ThenInclude(ur => ur.User)
                 .SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
 
-        public async Task<Role?> FindByIdAsync(int id)
+        public async Task<Permission?> FindByIdAsync(int id)
         {
-            return await _context.Roles
+            return await _context.Permissions
                 .SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<bool> IsNameUniqueAsync(string name)
         {
-            var existsRole = await _context.Roles
+            var entity = await _context.Permissions
                 .SingleOrDefaultAsync(x => x.Name.Equals(name));
-            if (existsRole is not null) return false;
-            
+
+            if (entity is not null) return false;
+
             return true;
         }
 
-        public async Task<Role?> GetByNameAsync(string name)
+        public async Task<Permission?> UpdateAsync(Permission entity)
         {
-            return await _context.Roles
-                .SingleOrDefaultAsync(x => x.Name.Equals(name));
-        }
-
-        public async Task<Role?> UpdateAsync(Role entity)
-        {
-            _context.Roles.Update(entity);
-            return await Task.FromResult<Role?>(entity);
+            _context.Permissions.Update(entity);
+            return await Task.FromResult<Permission?>(entity);
         }
     }
 }

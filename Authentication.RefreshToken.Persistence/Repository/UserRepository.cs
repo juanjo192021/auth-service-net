@@ -13,58 +13,102 @@ namespace Authentication.RefreshToken.Persistence.Repository
         {
             _context = context;
         }
+        public async Task<int> CountAsync() => await _context.Users.CountAsync();
+        
         public async Task<User?> CreateAsync(User entity)
         {
             await _context.Users.AddAsync(entity);
-            await _context.SaveChangesAsync();
             return entity;
         }
 
         public async Task<bool> DeactivateAsync(int id)
         {
-            var entity = await _context
-                 .Set<User>() // Crea el objeto DbSet para la entidad Discount
-                 .SingleOrDefaultAsync(x => x.Id.Equals(id)); // Busca la entidad por su Id
+            var entity = await _context.Users
+                 .SingleOrDefaultAsync(x => x.Id.Equals(id));
+            
             if (entity == null) return false;
 
             entity.IsActive = false;
 
             _context.Update(entity);
-            await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<IEnumerable<User>> GetAllAsync(int pageNumber, int pageSize, string search)
         {
-            throw new NotImplementedException();
+            IQueryable<User> query = _context.Users
+                .Include(r => r.UserRoles!)
+                .ThenInclude(ur => ur.Role);
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(
+                    m => EF.Functions.Like(m.FirstName.ToLower(), $"%{search.ToLower()}%") || 
+                    EF.Functions.Like(m.LastName.ToLower(), $"%{search.ToLower()}%"))
+                    .OrderBy(m => m.Id);
+            }
+
+            var data = await query.OrderBy(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize).ToListAsync();
+
+            return data;
         }
 
-        public async Task<User?> GetByEmailAsync(string email)
+        public async Task<bool> IsDocumentUniqueAsync(string documentNumber)
         {
-            return await _context.Set<User>()
-                .AsNoTracking()
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
+            var existsUser = await _context.Users
+                .SingleOrDefaultAsync(x => x.DocumentNumber.Equals(documentNumber));
+
+            if (existsUser is not null) return false;
+
+            return true;
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email)
+        {
+            var existsUser = await _context.Users
                 .SingleOrDefaultAsync(x => x.Email.Equals(email));
+
+            if (existsUser is not null) return false;
+
+            return true;
         }
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Set<User>()
-                .AsNoTracking()
+            return await _context.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
 
+        public async Task<User?> FindByIdAsync(int id)
+        {
+            return await _context.Users
+                .SingleOrDefaultAsync(x => x.Id.Equals(id));
+        }
+
+        public async Task<User?> GetWithRolesByEmailAsync(string email)
+        {
+            return await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User?> GetWithRolesByIdAsync(int id)
+        {
+            return await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
         public async Task<User?> UpdateAsync(User entity)
         {
-            var existing = await _context.Users.FindAsync(entity.Id);
-            if (existing is null) return null;
-
-            _context.Entry(existing).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
-            return existing;
+            _context.Users.Update(entity);
+            return await Task.FromResult<User?>(entity);
         }
     }
 }

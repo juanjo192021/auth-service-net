@@ -44,6 +44,8 @@ namespace Authentication.RefreshToken.Persistence
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IMenuRepository, MenuRepository>();
 
             return services;
         }

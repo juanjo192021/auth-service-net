@@ -5,6 +5,8 @@ namespace Authentication.RefreshToken.Persistence.Repository
 {
     public class UnitOfWork: IUnitOfWork
     {
+        public IMenuRepository Menus { get; }
+        public IPermissionRepository Permissions { get; }
         public IUserRepository Users { get; }
         public IUserRoleRepository UserRoles { get; }
         public IUserRefreshTokenRepository UserRefreshTokens { get; }
@@ -13,12 +15,16 @@ namespace Authentication.RefreshToken.Persistence.Repository
         private readonly ApplicationDbContext _applicationDbContext;
 
         public UnitOfWork(
+            IMenuRepository menus,
+            IPermissionRepository permissions,
             IUserRepository users, 
             IUserRoleRepository userRoles, 
             IUserRefreshTokenRepository userRefreshTokens, 
             IRoleRepository roles, 
             ApplicationDbContext applicationDbContext)
         {
+            Menus = menus;
+            Permissions = permissions;
             Users = users;
             UserRoles = userRoles;
             UserRefreshTokens = userRefreshTokens;
@@ -26,7 +32,7 @@ namespace Authentication.RefreshToken.Persistence.Repository
             _applicationDbContext = applicationDbContext;
         }
 
-        public async Task<int> Save(CancellationToken cancellationToken)
+        public async Task<int> CommitAsync(CancellationToken cancellationToken)
         {
             // Vamos a persistir los cambios de manera atomica en la base de datos
             // Va a tomar todos los cambios que se han realizado en los repositorios

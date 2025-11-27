@@ -12,7 +12,7 @@ namespace Authentication.RefreshToken.Persistence.Repository
         {
             _context = context;
         }
-        public async Task<int> CreateAsync(int userId, List<int> roleIds)
+        public async Task<List<UserRole>> AssignRolesAsync(int userId, List<int> roleIds)
         {
             var validRoles = await _context.Roles
                 .Where(r => roleIds.Contains(r.Id) && r.IsActive)
@@ -20,7 +20,7 @@ namespace Authentication.RefreshToken.Persistence.Repository
                 .ToListAsync();
 
             if (!validRoles.Any())
-                return 0;
+                return new List<UserRole>();
 
             var userRoles = validRoles.Select(roleId => new UserRole
             {
@@ -30,9 +30,8 @@ namespace Authentication.RefreshToken.Persistence.Repository
             }).ToList();
 
             await _context.UserRoles.AddRangeAsync(userRoles);
-            var result = await _context.SaveChangesAsync();
 
-            return result;
+            return userRoles;
         }
     }
 }
