@@ -19,10 +19,15 @@ namespace Authentication.RefreshToken.Domain.Entities
         public string? Address { get; set; }
         public bool IsActive { get; set; }
         public bool IsBlocked { get; set; }
-
-        // Propiedades de Navegación (para relaciones)
+        //public bool EmailMfaEnabled { get; set; }
+        //public bool SmsMfaEnabled { get; set; }
+        //public bool TotpMfaEnabled { get; set; }
+        //public string? PreferredMfaMethod { get; set; }
+        //public string? TotpSecret { get; set; }
+        //public string SecurityStamp { get; set; } = Guid.NewGuid().ToString();
         public virtual ICollection<UserRole> UserRoles { get; set; } = null!;
         public virtual ICollection<UserClaim>? UserClaims { get; set; } 
         public virtual ICollection<UserRefreshToken> UserRefreshTokens { get; set; } = null!;
+        public virtual ICollection<UserPermission>? UserPermissions { get; set; }
     }
 }
