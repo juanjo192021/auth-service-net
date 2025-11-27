@@ -1,12 +1,15 @@
 ﻿using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
+using Authentication.RefreshToken.Concerns.Common;
 using Authentication.RefreshToken.Infrastructure.Security;
 using Authentication.RefreshToken.Infrastructure.Security.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace Authentication.RefreshToken.Infrastructure
 {
@@ -39,82 +42,76 @@ namespace Authentication.RefreshToken.Infrastructure
                     ValidIssuer = jwtSettings.Issuer,
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-
                     RoleClaimType = ClaimTypes.Role,
                     ClockSkew = TimeSpan.Zero
                 };
 
-                /*options.Events = new JwtBearerEvents
+                options.Events = new JwtBearerEvents
                 {
-                    // ❗ Token inválido o manipulado
-                    OnAuthenticationFailed = async context =>
+                    // Token inválido o manipulado
+                    OnAuthenticationFailed = context =>
                     {
-                        context.NoResult();
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        context.Response.ContentType = "application/json";
-
-                        var error = new ErrorResponse
+                        if (context.Exception is SecurityTokenExpiredException)
                         {
-                            Type = ErrorTypeUris.Unauthorized,
-                            Title = "Token inválido",
-                            Status = StatusCodes.Status401Unauthorized,
-                            Errors = context.Exception.Message,
-                            TraceId = context.HttpContext.TraceIdentifier
-                        };
+                            context.Response.Headers.Add("Token-Expired", "true");
+                        }
 
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(error));
+                        return Task.CompletedTask;
+                        //context.NoResult();
+                        //context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        //context.Response.ContentType = "application/json";
+
+                        //var error = new ErrorResponse
+                        //{
+                        //    Message = "Token invalid for authentication",
+                        //};
+
+                        //await context.Response.WriteAsync(JsonSerializer.Serialize(error));
                     },
 
-                    // ❗ Token faltante o no válido
-                    OnChallenge = async context =>
+                    // Token faltante o no válido
+                    OnChallenge = context =>
                     {
-                        context.HandleResponse();
+                        //context.HandleResponse();
 
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        context.Response.ContentType = "application/json";
+                        //context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        //context.Response.ContentType = "application/json";
 
-                        var error = new ErrorResponse
-                        {
-                            Type = ErrorTypeUris.Unauthorized,
-                            Title = "No autorizado",
-                            Status = StatusCodes.Status401Unauthorized,
-                            Errors = "Token inválido, expirado o faltante. Envíe Authorization: Bearer <token>.",
-                            TraceId = context.HttpContext.TraceIdentifier,
-                        };
+                        //var error = new ErrorResponse
+                        //{
+                        //    Message = "Token inválido, expirado o faltante. Envíe Authorization: Bearer <token>.",
+                        //};
 
-                        await context.Response.WriteAsync(JsonSerializer.Serialize(error));
+                        //await context.Response.WriteAsync(JsonSerializer.Serialize(error));
+                        // ⚠️ No uses HandleResponse aquí o rompes el refresh
+                        return Task.CompletedTask;
                     },
 
-                    // ❗ Rol o política insuficiente
+                    // Rol o política insuficiente
                     OnForbidden = async context =>
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         context.Response.ContentType = "application/json";
 
                         var error = new ErrorResponse
-                        {
-                            Type = ErrorTypeUris.Forbidden,
-                            Title = "Acceso denegado",
-                            Status = StatusCodes.Status403Forbidden,
-                            Errors = "No tienes permisos para acceder a este recurso.",
-                            TraceId = context.HttpContext.TraceIdentifier,
+                        {     
+                            Message = "No tienes permisos para acceder a este recurso."
                         };
 
                         await context.Response.WriteAsync(JsonSerializer.Serialize(error));
                     },
 
-                    
-                    // 🔧 OPCIONAL: si algún día extraes token desde cookies o query string
-                    OnMessageReceived = context =>
-                    {
-                        var token = context.Request.Cookies["access_token"];
-                        if (!string.IsNullOrEmpty(token))
-                            context.Token = token;
 
-                        return Task.CompletedTask;
-                    }
-                    
-                };*/
+                    // si algún día extraes token desde cookies o query string
+                    //OnMessageReceived = context =>
+                    //{
+                    //    var token = context.Request.Cookies["access_token"];
+                    //    if (!string.IsNullOrEmpty(token))
+                    //        context.Token = token;
+
+                    //    return Task.CompletedTask;
+                    //}
+                };
             });
 
             services.AddScoped<IJwtService, JwtService>();

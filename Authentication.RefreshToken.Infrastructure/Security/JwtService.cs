@@ -34,14 +34,14 @@ namespace Authentication.RefreshToken.Infrastructure.Security
         }
 
         // Genera un token JWT para el usuario
-        public string GenerateToken(User user)
+        public string GenerateToken(int id, List<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_settings.Key);
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,
                     DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
@@ -49,14 +49,11 @@ namespace Authentication.RefreshToken.Infrastructure.Security
             };
 
             // Agregar roles
-            if (user.UserRoles != null)
+            if (roles != null)
             {
-                foreach (var userRole in user.UserRoles)
+                foreach (var role in roles)
                 {
-                    if (userRole.Role.IsActive)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
-                    }
+                    claims.Add(new Claim(ClaimTypes.Role,role));
                 }
             }
 

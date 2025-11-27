@@ -5,7 +5,7 @@ namespace Authentication.RefreshToken.Application.Interfaces.Infrastructure.Secu
 {
     public interface IJwtService
     {
-        string GenerateToken(User user);
+        string GenerateToken(int id, List<string> roles);
         TokenStatus ValidateToken(string token);
         string GetJwtId(string token);
         int? GetUserIdFromExpiredToken(string token);

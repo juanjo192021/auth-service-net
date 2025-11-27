@@ -18,7 +18,7 @@ namespace Authentication.RefreshToken.Infrastructure.Security
         private ClaimsPrincipal? User =>
             _httpContextAccessor.HttpContext?.User;
         public int? UserId =>
-            int.TryParse(User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value, out var id)
+            int.TryParse(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var id)
             ? id
             : (int?)null;
 
