@@ -24,9 +24,14 @@ namespace Authentication.RefreshToken.Persistence.Seed
         {
             await _context.Database.MigrateAsync();
 
-            await SeedRolesAsync();
-            await SeedPermissionsAsync();
-            var admin = await SeedAdminAsync();
+            //await SeedRolesAsync();
+            //await SeedPermissionsAsync();
+            //var admin = await SeedAdminAsync();
+            //await SeedUserRoleAsync(admin);
+
+            var admin = await SeedAdminAsync();   // 1. Crear admin primero
+            await SeedRolesAsync();          // 2. Crear roles con CreatedBy = admin.Id
+            await SeedPermissionsAsync();         // 3. Insertar permisos
             await SeedUserRoleAsync(admin);
         }
 
