@@ -1,4 +1,4 @@
-﻿using Authentication.RefreshToken.Domain.Entities;
+﻿/*using Authentication.RefreshToken.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -62,3 +62,4 @@ namespace Authentication.RefreshToken.Persistence.Configurations
         }
     }
 }
+*/

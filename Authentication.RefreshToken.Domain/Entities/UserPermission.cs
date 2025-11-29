@@ -1,4 +1,4 @@
-﻿using Authentication.RefreshToken.Domain.Common;
+﻿/*using Authentication.RefreshToken.Domain.Common;
 
 namespace Authentication.RefreshToken.Domain.Entities
 {
@@ -11,3 +11,4 @@ namespace Authentication.RefreshToken.Domain.Entities
         public virtual Permission Permission { get; set; } = null!;
     }
 }
+*/

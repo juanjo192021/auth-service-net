@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Authentication.RefreshToken.Application.Interfaces\Authentication.RefreshToken.Application.Interfaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Account\Commands\" />
+  </ItemGroup>
+
 </Project>

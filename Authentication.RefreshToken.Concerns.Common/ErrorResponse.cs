@@ -2,11 +2,16 @@
 
 namespace Authentication.RefreshToken.Concerns.Common
 {
-    public class ErrorResponse
+    public class ErrorResponse : ApiResponse<object>
     {
-        public bool IsSuccess => false;
-        public string Message { get; set; } = null!;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public IEnumerable<BaseError>? Errors { get; set; }
+
+        public ErrorResponse(string message, IEnumerable<BaseError>? errors = null)
+        {
+            Succeeded = false;
+            Message = message;
+            Errors = errors;
+        }
     }
 }

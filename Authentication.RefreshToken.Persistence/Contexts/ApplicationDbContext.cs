@@ -14,8 +14,7 @@ namespace Authentication.RefreshToken.Persistence.Contexts
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
-        public DbSet<UserPermission> UserPermissions { get; set; }
-        public DbSet<Menu> Menus { get; set; }
+        //public DbSet<UserPermission> UserPermissions { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -31,8 +30,7 @@ namespace Authentication.RefreshToken.Persistence.Contexts
             builder.Entity<UserRefreshToken>().ToTable("UserRefreshTokens");
             builder.Entity<Permission>().ToTable("Permissions");
             builder.Entity<RolePermission>().ToTable("RolePermissions");
-            builder.Entity<UserPermission>().ToTable("UserPermissions");
-            builder.Entity<Menu>().ToTable("Menus");
+            //builder.Entity<UserPermission>().ToTable("UserPermissions");
 
             base.OnModelCreating(builder);
 

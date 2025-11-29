@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Role.Commands.UpdateRole
 {
-    public class UpdateRoleHandler : IRequestHandler<UpdateRoleCommand, SuccessResponse<RoleDto>>
+    public class UpdateRoleHandler : IRequestHandler<UpdateRoleCommand, ApiResponse<RoleSummaryDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,22 +18,31 @@ namespace Authentication.RefreshToken.Application.UseCases.Role.Commands.UpdateR
             _mapper = mapper;
         }
 
-        public async Task<SuccessResponse<RoleDto>> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<RoleSummaryDto>> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
         {
-            var response = new SuccessResponse<RoleDto>();
-            var roleExists = await _unitOfWork.Roles.GetByNameAsync(request.Name);
-            if (roleExists != null && roleExists.Id != request.Id)
-                throw new ConflictException($"The role {request.Name} can't be updated because it already exists.");
+            var role = await _unitOfWork.Roles.FindByIdAsync(request.Id)
+                ?? throw new NotFoundException($"Role with ID {request.Id} not found.");
 
-            var roleMapped = _mapper.Map<Domain.Entities.Role>(request);
-            var roleUpdated = await _unitOfWork.Roles.UpdateAsync(roleMapped);
-            if (roleUpdated == null)
-                throw new NotFoundException($"Role with ID {request.Id} not found.");
+            if (request.Name is not null && role.Name != request.Name)
+            {
+                if (!await _unitOfWork.Roles.IsNameUniqueAsync(request.Name))
+                    throw new ConflictException($"Another role with name '{request.Name}' already exists.");
+            }
 
-            response.Data = _mapper.Map<RoleDto>(roleUpdated);
-            response.Message = "Role updated sucessfuly!";
+            _mapper.Map(request, role);
 
-            return response;
+            var updatedRole = await _unitOfWork.Roles.UpdateAsync(role);
+
+            if (request.PermissionIds is not null)
+            {
+                await _unitOfWork.RolePermissions.UpdatePermissionsAsync(role.Id, request.PermissionIds);
+            }
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return new ApiResponse<RoleSummaryDto>(
+                _mapper.Map<RoleSummaryDto>(updatedRole!),
+                "Role updated sucessfuly!");
         }
     }
 }

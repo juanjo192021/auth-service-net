@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRole
 {
-    public sealed record class GetRoleQuery : IRequest<SuccessResponse<RoleDto>>
+    public sealed record class GetRoleQuery : IRequest<ApiResponse<RoleDto>>
     {
         public int Id { get; set; }
     }

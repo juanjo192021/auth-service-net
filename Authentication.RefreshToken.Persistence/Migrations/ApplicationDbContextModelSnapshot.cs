@@ -22,78 +22,6 @@ namespace Authentication.RefreshToken.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Menu", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DeactivatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("DeactivatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<int>("Order")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PermissionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Route")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("Route")
-                        .IsUnique();
-
-                    b.HasIndex("UpdatedBy");
-
-                    b.ToTable("Menus", (string)null);
-                });
-
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -483,52 +411,6 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                     b.ToTable("UserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.UserPermission", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DeactivatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("DeactivatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsEnabled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "PermissionId");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("DeactivatedBy");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("UpdatedBy");
-
-                    b.ToTable("UserPermissions", (string)null);
-                });
-
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.UserRefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -614,42 +496,6 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                     b.HasIndex("UpdatedBy");
 
                     b.ToTable("UserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Menu", b =>
-                {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.Menu", null)
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.Permission", "Permission")
-                        .WithMany("Menus")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("UpdateByUser");
                 });
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Permission", b =>
@@ -825,46 +671,6 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.UserPermission", b =>
-                {
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "DeactivatedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeactivatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.Permission", "Permission")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "UpdateByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "User")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("DeactivatedByUser");
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("UpdateByUser");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.UserRefreshToken", b =>
                 {
                     b.HasOne("Authentication.RefreshToken.Domain.Entities.User", "User")
@@ -916,18 +722,9 @@ namespace Authentication.RefreshToken.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Menu", b =>
-                {
-                    b.Navigation("Children");
-                });
-
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Permission", b =>
                 {
-                    b.Navigation("Menus");
-
                     b.Navigation("RolePermissions");
-
-                    b.Navigation("UserPermissions");
                 });
 
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.Role", b =>
@@ -942,8 +739,6 @@ namespace Authentication.RefreshToken.Persistence.Migrations
             modelBuilder.Entity("Authentication.RefreshToken.Domain.Entities.User", b =>
                 {
                     b.Navigation("UserClaims");
-
-                    b.Navigation("UserPermissions");
 
                     b.Navigation("UserRefreshTokens");
 

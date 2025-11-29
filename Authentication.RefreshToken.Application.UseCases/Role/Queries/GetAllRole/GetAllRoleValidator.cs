@@ -8,16 +8,16 @@ namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRo
         {
             RuleFor(x => x.PageNumber)
             .GreaterThan(0)
-            .WithMessage("PageNumber debe ser mayor que 0.");
+            .WithMessage("PageNumber must be greater than 0.");
 
             RuleFor(x => x.PageSize)
                 .GreaterThan(0)
-                .WithMessage("PageSize debe ser mayor que 0.");
+                .WithMessage("PageSize must be greater than 0.");
 
             RuleFor(x => x.Search)
-                .MaximumLength(100)
+                .MaximumLength(50)
                 .When(x => !string.IsNullOrWhiteSpace(x.Search))
-                .WithMessage("Search no debe superar los 100 caracteres.");
+                .WithMessage("Search must not exceed 50 characters.");
         }
     }
 }

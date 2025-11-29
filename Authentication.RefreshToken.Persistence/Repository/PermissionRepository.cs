@@ -85,5 +85,14 @@ namespace Authentication.RefreshToken.Persistence.Repository
             _context.Permissions.Update(entity);
             return await Task.FromResult<Permission?>(entity);
         }
+
+        public async Task<IEnumerable<Permission>> GetAllAsync()
+        {
+            var permissions = await _context.Permissions
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+
+            return permissions;
+        }
     }
 }

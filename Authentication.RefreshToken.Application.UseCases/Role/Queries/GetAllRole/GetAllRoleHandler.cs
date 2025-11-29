@@ -4,10 +4,11 @@ using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
 using MapsterMapper;
 using MediatR;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole
 {
-    public class GetAllRoleHandler : IRequestHandler<GetAllRoleQuery, ResponsePagination<IEnumerable<RoleDto>>>
+    public class GetAllRoleHandler : IRequestHandler<GetAllRoleQuery, PagedResponse<IEnumerable<RoleDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,27 +19,25 @@ namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRo
             _mapper = mapper;
         }
 
-        public async Task<ResponsePagination<IEnumerable<RoleDto>>> Handle(GetAllRoleQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<RoleDto>>> Handle(GetAllRoleQuery request, CancellationToken cancellationToken)
         {
-            var response = new ResponsePagination<IEnumerable<RoleDto>>();
-
             var pageNumber = request.PageNumber;
             var pageSize = request.PageSize;
             var search = request.Search;
 
-            var count = await _unitOfWork.Roles.CountAsync();
-            if (count < 1)
+            var totalRecords = await _unitOfWork.Roles.CountAsync();
+            if (totalRecords < 1)
                 throw new NotFoundException("Not found any roles");
 
             var roles = await _unitOfWork.Roles.GetAllAsync(pageNumber, pageSize, search);
 
-            response.Data = _mapper.Map<IEnumerable<RoleDto>>(roles);
-            response.Message = "Roles retrieved successfully";
-            response.PageNumber = pageNumber;
-            response.TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            response.TotalCount = count;
-
-            return response;
+            return new PagedResponse<IEnumerable<RoleDto>>(
+                _mapper.Map<IEnumerable<RoleDto>>(roles),
+                "Roles retrieved successfully",
+                pageNumber,
+                pageSize,
+                totalRecords)
+            ;
         }
     }
 }

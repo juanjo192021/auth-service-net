@@ -1,49 +1,72 @@
 ﻿using Authentication.RefreshToken.Application.Dto.Authentication;
 using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
+using Authentication.RefreshToken.Application.UseCases.Authentication.Common;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
-using MapsterMapper;
 using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Login
 {
-    public class LoginHandler : IRequestHandler<LoginCommand, SuccessResponse<AuthenticationDto>>
+    public class LoginHandler : IRequestHandler<LoginCommand, ApiResponse<TokenInfoDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtService _jwtService;
         private readonly IRefreshTokenService _refreshTokenService;
-        private readonly IMapper _mapper;
 
         public LoginHandler(IUnitOfWork unitOfWork, 
             IPasswordHasher passwordHasher, 
             IJwtService jwtService, 
-            IRefreshTokenService refreshTokenService, 
-            IMapper mapper)
+            IRefreshTokenService refreshTokenService)
         {
             _unitOfWork = unitOfWork;
             _passwordHasher = passwordHasher;
             _jwtService = jwtService;
             _refreshTokenService = refreshTokenService;
-            _mapper = mapper;
         }
 
-        public async Task<SuccessResponse<AuthenticationDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<TokenInfoDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var response = new SuccessResponse<AuthenticationDto>();
-            
-            var email = request.Email;
-            var password = request.Password;
+            var user = await GetUserWithRolesAsync(request.Email);
 
-            var user = await _unitOfWork.Users.GetByEmailAsync(email)
-                ?? throw new NotFoundException($"Not found user with email {email}");
+            ValidateCredentials(request.Password, user);
 
-            bool validPassword = _passwordHasher.Verify(password, user.PasswordHash);
-            if (!validPassword)
-                throw new UnauthorizedException("Invalid email or password.");
+            var roles = UserRoleHelper.ExtractUserRoles(user);
 
-            var token = _jwtService.GenerateToken(user) 
+            var (token, refreshToken, jwtId, refreshTokenHash) = GenerateTokens(user, roles);
+
+            await SaveRefreshTokenAsync(user.Id, jwtId, refreshTokenHash);
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return new ApiResponse<TokenInfoDto>(new TokenInfoDto
+            {
+                AccessToken = token,
+                RefreshToken = refreshToken
+            }, "User signed in successfully.");
+        }
+
+        private async Task<Domain.Entities.User> GetUserWithRolesAsync(string email)
+        {
+            return await _unitOfWork.Users.GetWithRolesByEmailAsync(email)
+                ?? throw new NotFoundException($"User with email {email} not found.");
+        }
+
+        private void ValidateCredentials(string password, Domain.Entities.User user)
+        {
+            if (!user.IsActive)
+                throw new UnauthorizedException("User account is not active.");
+
+            if (user.IsBlocked)
+                throw new UnauthorizedException("User account is blocked.");
+
+            if (!_passwordHasher.Verify(password, user.PasswordHash))
+                throw new UnauthorizedException("Invalid credentials.");
+        }
+
+        private GeneratedTokenData GenerateTokens(Domain.Entities.User user, List<string> roles)
+        {
+            var token = _jwtService.GenerateToken(user.Id, roles)
                 ?? throw new Exception("Failed to generate JWT token.");
 
             var refreshToken = _refreshTokenService.GenerateRefreshToken()
@@ -52,21 +75,16 @@ namespace Authentication.RefreshToken.Application.UseCases.Authentication.Comman
             var jwtId = _jwtService.GetJwtId(token);
             var refreshTokenHash = _refreshTokenService.ComputeSha256(refreshToken);
 
-            await _unitOfWork.UserRefreshTokens.CreateAsync(user.Id, jwtId, refreshTokenHash);
+            return new GeneratedTokenData(token, refreshToken, jwtId, refreshTokenHash);
+        }
 
-            response.Data = new AuthenticationDto
-            {
-                Tokens = new TokenInfoDto
-                {
-                    AccessToken = token,
-                    RefreshToken = refreshToken
-                },
-                User = _mapper.Map<UserInfoDto>(user)
-            };
-            response.Message = "User signed in successfully.";
+        private async Task SaveRefreshTokenAsync(int userId, string jwtId, string refreshTokenHash)
+        {
+            var saved = await _unitOfWork.UserRefreshTokens
+                .CreateAsync(userId, jwtId, refreshTokenHash);
 
-            return response;
-
+            if (saved is null)
+                throw new Exception("Failed to save refresh token.");
         }
     }
 }

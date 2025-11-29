@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole
 {
-    public sealed record class GetAllRoleQuery : IRequest<ResponsePagination<IEnumerable<RoleDto>>>
+    public sealed record class GetAllRoleQuery : IRequest<PagedResponse<IEnumerable<RoleDto>>>
     {
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;

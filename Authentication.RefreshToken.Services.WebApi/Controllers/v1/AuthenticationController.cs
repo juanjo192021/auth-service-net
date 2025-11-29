@@ -1,8 +1,9 @@
 ﻿using Asp.Versioning;
 using Authentication.RefreshToken.Application.Dto.Authentication;
-using Authentication.RefreshToken.Application.UseCases.Authentication.Command.Refresh;
 using Authentication.RefreshToken.Application.UseCases.Authentication.Command.Login;
+using Authentication.RefreshToken.Application.UseCases.Authentication.Command.Refresh;
 using Authentication.RefreshToken.Application.UseCases.Authentication.Command.Register;
+using Authentication.RefreshToken.Application.UseCases.Authentication.Command.RevokeToken;
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +32,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
             Description = "Authenticates a user with email and password, returning authentication tokens upon success.",
             OperationId = "LoginUser"
         )]
-        [SwaggerResponse( StatusCodes.Status200OK, "OK", typeof(SuccessResponse<AuthenticationDto>) )]
+        [SwaggerResponse( StatusCodes.Status200OK, "OK", typeof(ApiResponse<TokenInfoDto>) )]
         [SwaggerResponse( StatusCodes.Status400BadRequest , "BadRequest" , typeof(ErrorResponse) )]
         [SwaggerResponse( StatusCodes.Status401Unauthorized , "Unauthorized" , typeof(ErrorResponse) )]
         [SwaggerResponse( StatusCodes.Status404NotFound , "Not Found" , typeof(ErrorResponse) )]
@@ -39,7 +40,24 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
         public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
             var response = await _mediator.Send(command);
-            return Ok(response);
+
+            Response.Cookies.Append(
+                "refresh_token",
+                response.Data.RefreshToken!,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    //Secure = true,
+                    //SameSite = SameSiteMode.Strict,
+                    Secure = true,                 // Only fodev
+                    SameSite = SameSiteMode.None,   // cross-site
+                    Expires = DateTime.UtcNow.AddDays(7)
+                }
+            );
+
+            return Ok(new ApiResponse<string>(
+                response.Data.AccessToken,
+                response.Message));
         }
 
         [AllowAnonymous]
@@ -49,8 +67,8 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
             Description = "Registers a new user with the provided details and returns authentication tokens.",
             OperationId = "RegisterUser"
         )]
-        [SwaggerResponse( StatusCodes.Status200OK , "OK" , typeof(SuccessResponse<AuthenticationDto>) )]
-        [SwaggerResponse( StatusCodes.Status400BadRequest , "BadRequest" , typeof(ErrorResponse) )]
+        [SwaggerResponse( StatusCodes.Status201Created, "OK" , typeof(ApiResponse<TokenInfoDto>) )]
+        [SwaggerResponse( StatusCodes.Status400BadRequest , "Bad Request" , typeof(ErrorResponse) )]
         [SwaggerResponse( StatusCodes.Status401Unauthorized , "Unauthorized" , typeof(ErrorResponse) )]
         [SwaggerResponse( StatusCodes.Status404NotFound , "Not Found", typeof(ErrorResponse) )]
         [SwaggerResponse( StatusCodes.Status409Conflict , "Conflict", typeof(ErrorResponse) )]
@@ -58,7 +76,21 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
         public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
             var response = await _mediator.Send(command);
-            return Ok(response);
+            Response.Cookies.Append(
+                "refresh_token",
+                response.Data.RefreshToken!,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                }
+            );
+
+            return Ok(new ApiResponse<string>(
+                response.Data.AccessToken,
+                response.Message));
         }
 
         [AllowAnonymous]
@@ -68,16 +100,67 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
             Description = "Generates new authentication tokens using the provided refresh token.",
             OperationId = "RefreshToken"
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(SuccessResponse<TokenInfoDto>))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "BadRequest", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status201Created, "OK", typeof(ApiResponse<TokenInfoDto>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Bad Request", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found ", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
-        public async Task<IActionResult> Refresh([FromBody] RefreshCommand command)
+        public async Task<IActionResult> Refresh()
         {
-            var response = await _mediator.Send(command);
+            var refreshToken = Request.Cookies["refresh_token"];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized(new ErrorResponse("Refresh token cookie not found."));
+            }
+            //+19564206724
+            var response = await _mediator.Send(new RefreshCommand
+            {
+                RefreshToken = refreshToken
+            });
+
+            Response.Cookies.Append(
+                "refresh_token",
+                response.Data.RefreshToken!,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                }
+            );
+
+            return Ok(new ApiResponse<string>(
+                response.Data.AccessToken,
+                response.Message));
+        }
+        [AllowAnonymous]
+        [HttpPost("revoke")]
+        [SwaggerOperation(
+            Summary = "Revoke refresh token"
+        )]
+        [SwaggerResponse(StatusCodes.Status201Created, "OK", typeof(ApiResponse<object>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Bad Request", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found ", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
+        public async Task<IActionResult> RevokeRefreshToken()
+        {
+            var refreshToken = Request.Cookies["refresh_token"];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized(new ErrorResponse("Refresh token cookie not found."));
+            }
+
+            var response = await _mediator.Send(new RevokeTokenCommand
+            {
+                RefreshToken = refreshToken
+            });
+
+            Response.Cookies.Delete("refresh_token");
+
             return Ok(response);
         }
-
     }
+
 }

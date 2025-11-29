@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Register
 {
-    public sealed record class RegisterCommand : IRequest<SuccessResponse<AuthenticationDto>>
+    public sealed record class RegisterCommand : IRequest<ApiResponse<TokenInfoDto>>
     {
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;

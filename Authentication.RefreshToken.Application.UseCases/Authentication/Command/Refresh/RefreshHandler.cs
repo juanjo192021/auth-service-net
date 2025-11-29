@@ -1,13 +1,15 @@
 ﻿using Authentication.RefreshToken.Application.Dto.Authentication;
 using Authentication.RefreshToken.Application.Interfaces.Infrastructure.Security;
 using Authentication.RefreshToken.Application.Interfaces.Persistence;
+using Authentication.RefreshToken.Application.UseCases.Authentication.Common;
 using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
+using Authentication.RefreshToken.Domain.Entities;
 using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Authentication.Command.Refresh
 {
-    public class RefreshHandler : IRequestHandler<RefreshCommand, SuccessResponse<TokenInfoDto>>
+    public class RefreshHandler : IRequestHandler<RefreshCommand, ApiResponse<TokenInfoDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
@@ -23,75 +25,75 @@ namespace Authentication.RefreshToken.Application.UseCases.Authentication.Comman
             _refreshTokenService = refreshTokenService;
         }
 
-        public async Task<SuccessResponse<TokenInfoDto>> Handle(RefreshCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<TokenInfoDto>> Handle(RefreshCommand request, CancellationToken cancellationToken)
         {
-            var response = new SuccessResponse<TokenInfoDto>();
-            
-            var jwtId = _jwtService.GetJwtId(request.AccessToken);
-            var resetTokenHash = _refreshTokenService.ComputeSha256(request.RefreshToken);
 
-            var tokenEntity = await _unitOfWork.UserRefreshTokens.FindByRefreshTokenAsync(resetTokenHash) 
-                ?? throw new NotFoundException("Not found refresh token.");
+            var (refreshEntity, user) = await ValidateRefreshTokenAsync(request);
 
-            if (tokenEntity.IsRevoked)
+            var roles = UserRoleHelper.ExtractUserRoles(user);
+
+            await RevokeRefreshTokenAsync(refreshEntity);
+
+            var tokens = GenerateTokens(user, roles);
+
+            await SaveRefreshTokenAsync(user.Id, tokens.JwtId, tokens.RefreshTokenHash);
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return new ApiResponse<TokenInfoDto>(new TokenInfoDto
+            {
+                AccessToken = tokens.Token,
+                RefreshToken = tokens.RefreshToken
+            },"Token refreshed successfully.");
+        }
+
+        private async Task<(UserRefreshToken RefreshEntity, Domain.Entities.User User)> ValidateRefreshTokenAsync(RefreshCommand request)
+        {
+            var refreshHash = _refreshTokenService.ComputeSha256(request.RefreshToken);
+
+            var userRefreshToken = await _unitOfWork.UserRefreshTokens.GetByRefreshTokenHashAsync(refreshHash)
+                ?? throw new NotFoundException("Refresh token not found.");
+
+            if (userRefreshToken.IsRevoked)
                 throw new UnauthorizedException("Refresh token was revoked.");
-            
-            if (tokenEntity.JwtId != jwtId)
-                throw new UnauthorizedException("Access token does not match the refresh token.");
-            
 
-            if (tokenEntity.ExpirationDate <= DateTime.UtcNow)
+            if (userRefreshToken.ExpirationDate <= DateTime.UtcNow)
             {
-                tokenEntity.IsRevoked = true;
-                await _unitOfWork.UserRefreshTokens.UpdateAsync(tokenEntity);
-
-                throw new UnauthorizedException("Refresh token has expired.");
+                userRefreshToken.IsRevoked = true;
+                await _unitOfWork.UserRefreshTokens.UpdateAsync(userRefreshToken);
+                throw new UnauthorizedException("Refresh token expired.");
             }
 
-            var tokenStatus = _jwtService.ValidateToken(request.AccessToken);
+            var user = await _unitOfWork.Users.GetWithRolesByIdAsync(userRefreshToken.UserId)
+                ?? throw new NotFoundException("User not found.");
 
-            switch (tokenStatus)
-            {
-                case TokenStatus.Valid:
-                    throw new UnauthorizedException("The token is still valid, no need to renew it.");
-                case TokenStatus.InvalidFormat:
-                    throw new UnauthorizedException("The token format is invalid.");
-                case TokenStatus.InvalidSignature:
-                    throw new UnauthorizedException("The token was tampered with or the signature is invalid.");
-                case TokenStatus.Corrupt:
-                    throw new UnauthorizedException("The token is corrupt.");
-                case TokenStatus.Expired:
-                    break;
-            }
+            return (userRefreshToken, user);
+        }
 
-            // Obtener los claims del token para la renovación
-            var userIdClaim = _jwtService.GetUserIdFromExpiredToken(request.AccessToken)
-                ?? throw new Exception("Invalid or corrupt token, could not retrieve user ID.");
+        private async Task RevokeRefreshTokenAsync(UserRefreshToken userRefreshToken)
+        {
+            userRefreshToken.IsRevoked = true;
+            await _unitOfWork.UserRefreshTokens.UpdateAsync(userRefreshToken);
+        }
 
-            var user = await _unitOfWork.Users.GetByIdAsync(userIdClaim)
-                ?? throw new NotFoundException("Not found user");
-            
-            // Invalidar el refresh token anterior
-            tokenEntity.IsRevoked = true;
-            await _unitOfWork.UserRefreshTokens.UpdateAsync(tokenEntity);
+        private GeneratedTokenData GenerateTokens(Domain.Entities.User user, List<string> roles)
+        {
+            var token = _jwtService.GenerateToken(user.Id, roles);
 
-            // Generar nuevos tokens
-            var newToken = _jwtService.GenerateToken(user);
-            var newRefreshToken = _refreshTokenService.GenerateRefreshToken();
+            var refresh = _refreshTokenService.GenerateRefreshToken();
 
-            var jwtIdNew = _jwtService.GetJwtId(newToken);
-            var newRefreshTokenHash = _refreshTokenService.ComputeSha256(newRefreshToken);
+            var jwtId = _jwtService.GetJwtId(token);
 
-            await _unitOfWork.UserRefreshTokens.CreateAsync(user.Id, jwtIdNew, newRefreshTokenHash);
+            var refreshHash = _refreshTokenService.ComputeSha256(refresh);
 
-            response.Data = new TokenInfoDto
-            {
-                AccessToken = newToken,
-                RefreshToken = newRefreshToken
-            };
-            response.Message = "Token refreshed successfully.";
+            return new GeneratedTokenData(token, refresh, jwtId, refreshHash);
+        }
 
-            return response;
+        private async Task SaveRefreshTokenAsync(int userId, string jwtId, string tokenHash)
+        {
+            var saved = await _unitOfWork.UserRefreshTokens.CreateAsync(userId, jwtId, tokenHash);
+            if (saved == null)
+                throw new Exception("Failed to store new refresh token.");
         }
     }
 }

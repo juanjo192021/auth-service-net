@@ -102,10 +102,10 @@ namespace Authentication.RefreshToken.Persistence.Configurations
                    .HasForeignKey(rt => rt.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(u => u.UserPermissions)
+           /* builder.HasMany(u => u.UserPermissions)
                 .WithOne(up => up.User)
                 .HasForeignKey(up => up.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);*/
 
             builder.HasOne(r => r.CreatedByUser)
                 .WithMany()

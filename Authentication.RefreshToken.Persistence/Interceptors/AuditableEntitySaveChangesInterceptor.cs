@@ -32,7 +32,7 @@ namespace Authentication.RefreshToken.Persistence.Interceptors
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = _currentUserService.UserId ?? DefaultUser.Id;
+                        entry.Entity.CreatedBy = _currentUserService.UserId ?? Users.Id;
                         entry.Entity.CreatedAt = DateTime.UtcNow;
                         break;
 

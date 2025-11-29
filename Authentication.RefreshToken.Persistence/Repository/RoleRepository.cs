@@ -42,6 +42,8 @@ namespace Authentication.RefreshToken.Persistence.Repository
             IQueryable<Role> query = _context.Roles
                 .Include(r => r.UserRoles!)
                 .ThenInclude(ur => ur.User)
+                .Include(r => r.RolePermissions!)
+                .ThenInclude(rp => rp.Permission)
                 .Include(r => r.CreatedByUser)
                 .Include(r => r.UpdateByUser)
                 .Include(r => r.DeactivatedByUser);
@@ -64,6 +66,8 @@ namespace Authentication.RefreshToken.Persistence.Repository
             return await _context.Roles
                 .Include(r => r.UserRoles!)
                 .ThenInclude(ur => ur.User)
+                .Include(r => r.RolePermissions!)
+                .ThenInclude(rp => rp.Permission)
                 .SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
 

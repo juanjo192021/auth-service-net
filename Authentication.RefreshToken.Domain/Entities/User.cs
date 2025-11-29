@@ -28,6 +28,6 @@ namespace Authentication.RefreshToken.Domain.Entities
         public virtual ICollection<UserRole> UserRoles { get; set; } = null!;
         public virtual ICollection<UserClaim>? UserClaims { get; set; } 
         public virtual ICollection<UserRefreshToken> UserRefreshTokens { get; set; } = null!;
-        public virtual ICollection<UserPermission>? UserPermissions { get; set; }
+        //public virtual ICollection<UserPermission>? UserPermissions { get; set; }
     }
 }

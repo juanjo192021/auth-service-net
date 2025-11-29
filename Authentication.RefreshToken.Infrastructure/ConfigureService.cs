@@ -93,10 +93,7 @@ namespace Authentication.RefreshToken.Infrastructure
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         context.Response.ContentType = "application/json";
 
-                        var error = new ErrorResponse
-                        {     
-                            Message = "No tienes permisos para acceder a este recurso."
-                        };
+                        var error = new ErrorResponse("No tienes permisos para acceder a este recurso.");
 
                         await context.Response.WriteAsync(JsonSerializer.Serialize(error));
                     },

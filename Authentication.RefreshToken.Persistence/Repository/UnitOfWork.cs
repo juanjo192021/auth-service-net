@@ -5,30 +5,30 @@ namespace Authentication.RefreshToken.Persistence.Repository
 {
     public class UnitOfWork: IUnitOfWork
     {
-        public IMenuRepository Menus { get; }
         public IPermissionRepository Permissions { get; }
         public IUserRepository Users { get; }
         public IUserRoleRepository UserRoles { get; }
         public IUserRefreshTokenRepository UserRefreshTokens { get; }
         public IRoleRepository Roles { get; }
+        public IRolePermissionRepository RolePermissions { get; }
 
         private readonly ApplicationDbContext _applicationDbContext;
 
         public UnitOfWork(
-            IMenuRepository menus,
             IPermissionRepository permissions,
             IUserRepository users, 
             IUserRoleRepository userRoles, 
             IUserRefreshTokenRepository userRefreshTokens, 
-            IRoleRepository roles, 
+            IRoleRepository roles,
+            IRolePermissionRepository rolePermissions,
             ApplicationDbContext applicationDbContext)
         {
-            Menus = menus;
             Permissions = permissions;
             Users = users;
             UserRoles = userRoles;
             UserRefreshTokens = userRefreshTokens;
             Roles = roles;
+            RolePermissions = rolePermissions;
             _applicationDbContext = applicationDbContext;
         }
 

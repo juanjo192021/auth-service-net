@@ -35,7 +35,7 @@ namespace Authentication.RefreshToken.Persistence
             });
 
             // Seed Settings
-            services.Configure<DefaultAdminSettings>(configuration.GetSection("DefaultAdmin"));
+            services.Configure<AdminSettings>(configuration.GetSection("DefaultAdmin"));
             services.AddScoped<DatabaseSeeder>();
 
             // Repositories
@@ -45,7 +45,7 @@ namespace Authentication.RefreshToken.Persistence
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
-            services.AddScoped<IMenuRepository, MenuRepository>();
+            services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
 
             return services;
         }

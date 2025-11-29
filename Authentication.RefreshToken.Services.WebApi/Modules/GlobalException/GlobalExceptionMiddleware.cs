@@ -50,10 +50,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
-            var response = new ErrorResponse
-            {
-                Message = message,
-            };
+            var response = new ErrorResponse(message);
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
         }
 
@@ -65,11 +62,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Modules.GlobalException
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-            var response = new ErrorResponse
-            {
-                Message = message,
-                Errors = errors
-            };
+            var response = new ErrorResponse(message, errors);
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
         }

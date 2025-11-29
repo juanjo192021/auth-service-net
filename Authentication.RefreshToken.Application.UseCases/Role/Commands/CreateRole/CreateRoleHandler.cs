@@ -7,7 +7,7 @@ using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 
 namespace Authentication.RefreshToken.Application.UseCases.Role.Commands.CreateRole
 {
-    public class CreateRoleHandler : IRequestHandler<CreateRoleCommand, SuccessResponse<RoleDto>>
+    public class CreateRoleHandler : IRequestHandler<CreateRoleCommand, ApiResponse<RoleSummaryDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,19 +18,27 @@ namespace Authentication.RefreshToken.Application.UseCases.Role.Commands.CreateR
             _mapper = mapper;
         }
 
-        public async Task<SuccessResponse<RoleDto>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<RoleSummaryDto>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
         {
-            var response = new SuccessResponse<RoleDto>();
-            var roleExists = await _unitOfWork.Roles.GetByNameAsync(request.Name)
-                ?? throw new ConflictException($"The role {request.Name} can't be created because it already exists.");
-            var roleMapped = _mapper.Map<Domain.Entities.Role>(request);
-            var roleCreated = await _unitOfWork.Roles.CreateAsync(roleMapped)
-                ?? throw new Exception("Error creating role");
-            //_unitOfWork.CommitAsync();
-            response.Data = _mapper.Map<RoleDto>(roleCreated);
-            response.Message = "Role created successfully";
+            if (!await _unitOfWork.Roles.IsNameUniqueAsync(request.Name.Trim()))
+                throw new ConflictException($"The role {request.Name} already exists.");
 
-            return response;
+            var role = _mapper.Map<Domain.Entities.Role>(request);
+            var createdRole = await _unitOfWork.Roles.CreateAsync(role)
+                ?? throw new Exception("Error creating role");
+            
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            var asignedPermissions = await _unitOfWork.RolePermissions.AssignPermissionAsync(createdRole.Id, request.PermissionIds);
+
+            if (asignedPermissions.Count != request.PermissionIds.Count)
+                throw new Exception("Error assigning permissions to role");
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return new ApiResponse<RoleSummaryDto>(
+                _mapper.Map<RoleSummaryDto>(createdRole),
+                "Role created successfully");
         }
     }
 }
