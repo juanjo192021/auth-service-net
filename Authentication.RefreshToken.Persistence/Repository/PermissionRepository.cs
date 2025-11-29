@@ -89,6 +89,9 @@ namespace Authentication.RefreshToken.Persistence.Repository
         public async Task<IEnumerable<Permission>> GetAllAsync()
         {
             var permissions = await _context.Permissions
+                .Include(r => r.CreatedByUser)
+                .Include(r => r.UpdateByUser)
+                .Include(r => r.DeactivatedByUser)
                 .OrderBy(x => x.Id)
                 .ToListAsync();
 
