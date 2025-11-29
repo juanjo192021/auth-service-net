@@ -1,5 +1,5 @@
 ﻿using Asp.Versioning;
-using Authentication.RefreshToken.Application.Dto.User;
+using Authentication.RefreshToken.Application.Dto.Permission;
 using Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetAllPermission;
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
@@ -28,7 +28,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
             Description = "Retrieve all permissions in the system",
             OperationId = "GetAllPermissions"
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(PagedResponse<UserSummaryDto>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(ApiResponse<IEnumerable<PermissionDto>>))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
         public async Task<IActionResult> GetAllAsync()

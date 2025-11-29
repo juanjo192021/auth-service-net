@@ -83,7 +83,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
             Description = "Retrieve all roles in the system without pagination",
             OperationId = "GetAllRoles"
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(PagedResponse<RoleDto>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(ApiResponse<IEnumerable<RoleDto>>))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
         public async Task<IActionResult> GetAllAsync()
