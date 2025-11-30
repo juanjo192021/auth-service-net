@@ -4,7 +4,6 @@ using Authentication.RefreshToken.Application.UseCases.Common.Exceptions;
 using Authentication.RefreshToken.Concerns.Common;
 using MapsterMapper;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole
 {

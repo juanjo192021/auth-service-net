@@ -77,7 +77,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
             return Ok(response);
         }
 
-        [HttpGet("/form")]
+        [HttpGet("get-roles")]
         [SwaggerOperation(
             Summary = "Get All Roles",
             Description = "Retrieve all roles in the system without pagination",

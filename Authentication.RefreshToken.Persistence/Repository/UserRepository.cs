@@ -36,9 +36,26 @@ namespace Authentication.RefreshToken.Persistence.Repository
 
         public async Task<IEnumerable<User>> GetAllAsync(int pageNumber, int pageSize, string search)
         {
-            IQueryable<User> query = _context.Users
-                .Include(r => r.UserRoles!)
-                .ThenInclude(ur => ur.Role);
+            IQueryable<User> query = _context.Users.AsNoTracking()
+                .Include(u => u.CreatedByUser)
+                .Include(u => u.UpdateByUser)
+                .Include(u => u.DeactivatedByUser)
+
+                .Include(u => u.UserRoles!)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.CreatedByUser)
+                .Include(u => u.UserRoles!)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.UpdateByUser)
+                .Include(u => u.UserRoles!)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.DeactivatedByUser)
+
+                 .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.RolePermissions)
+                            .ThenInclude(rp => rp.Permission)
+                .AsSplitQuery();
 
             if (!string.IsNullOrEmpty(search))
             {

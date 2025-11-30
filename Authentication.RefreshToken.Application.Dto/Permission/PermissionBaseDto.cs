@@ -1,6 +1,6 @@
-﻿namespace Authentication.RefreshToken.Application.Dto.Role
+﻿namespace Authentication.RefreshToken.Application.Dto.Permission
 {
-    public record class RoleBase
+    public class PermissionBaseDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

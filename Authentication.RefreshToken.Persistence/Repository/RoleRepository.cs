@@ -39,14 +39,27 @@ namespace Authentication.RefreshToken.Persistence.Repository
 
         public async Task<IEnumerable<Role>> GetAllAsync(int pageNumber, int pageSize, string search)
         {
-            IQueryable<Role> query = _context.Roles
+            IQueryable<Role> query = _context.Roles.AsNoTracking()
                 .Include(r => r.UserRoles!)
-                .ThenInclude(ur => ur.User)
+                    .ThenInclude(ur => ur.User)
+                        .ThenInclude(u => u.CreatedByUser)
+                .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.User.UpdateByUser)
+                .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.User.DeactivatedByUser)
+
                 .Include(r => r.RolePermissions!)
-                .ThenInclude(rp => rp.Permission)
+                    .ThenInclude(rp => rp.Permission)
+                        .ThenInclude(p => p.CreatedByUser)
+                .Include(r => r.RolePermissions!)
+                    .ThenInclude(rp => rp.Permission.UpdateByUser)
+                .Include(r => r.RolePermissions!)
+                    .ThenInclude(rp => rp.Permission.DeactivatedByUser)
+
                 .Include(r => r.CreatedByUser)
                 .Include(r => r.UpdateByUser)
-                .Include(r => r.DeactivatedByUser);
+                .Include(r => r.DeactivatedByUser)
+                .AsSplitQuery();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -61,13 +74,57 @@ namespace Authentication.RefreshToken.Persistence.Repository
             return data;
         }
 
+        public async Task<IEnumerable<Role>> GetAllAsync()
+        {
+            var roles = await _context.Roles.AsNoTracking()
+                .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.User)
+                        .ThenInclude(u => u.CreatedByUser)
+                .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.User.UpdateByUser)
+                .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.User.DeactivatedByUser)
+
+                .Include(r => r.RolePermissions!)
+                    .ThenInclude(rp => rp.Permission)
+                        .ThenInclude(p => p.CreatedByUser)
+                .Include(r => r.RolePermissions!)
+                    .ThenInclude(rp => rp.Permission.UpdateByUser)
+                .Include(r => r.RolePermissions!)
+                    .ThenInclude(rp => rp.Permission.DeactivatedByUser)
+
+                .Include(r => r.CreatedByUser)
+                .Include(r => r.UpdateByUser)
+                .Include(r => r.DeactivatedByUser)
+                .AsSplitQuery()
+                .ToListAsync();
+
+            return roles;
+        }
+
         public async Task<Role?> GetByIdAsync(int id)
         {
-            return await _context.Roles
+            return await _context.Roles.AsNoTracking()
                 .Include(r => r.UserRoles!)
-                .ThenInclude(ur => ur.User)
+                    .ThenInclude(ur => ur.User)
+                        .ThenInclude(u => u.CreatedByUser)
+                .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.User.UpdateByUser)
+                .Include(r => r.UserRoles!)
+                    .ThenInclude(ur => ur.User.DeactivatedByUser)
+
                 .Include(r => r.RolePermissions!)
-                .ThenInclude(rp => rp.Permission)
+                    .ThenInclude(rp => rp.Permission)
+                        .ThenInclude(p => p.CreatedByUser)
+                .Include(r => r.RolePermissions!)
+                    .ThenInclude(rp => rp.Permission.UpdateByUser)
+                .Include(r => r.RolePermissions!)
+                    .ThenInclude(rp => rp.Permission.DeactivatedByUser)
+
+                .Include(r => r.CreatedByUser)
+                .Include(r => r.UpdateByUser)
+                .Include(r => r.DeactivatedByUser)
+                .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
 
