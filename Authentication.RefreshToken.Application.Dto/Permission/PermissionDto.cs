@@ -2,7 +2,7 @@
 
 namespace Authentication.RefreshToken.Application.Dto.Permission
 {
-    public class PermissionDto
+    public class PermissionDto : PermissionSummaryDto
     {
         public AuditDto Audit { get; set; } = null!;
     }

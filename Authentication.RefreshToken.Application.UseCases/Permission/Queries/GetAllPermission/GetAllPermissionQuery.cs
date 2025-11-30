@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetAllPermission
 {
-    public sealed record class GetAllPermissionQuery : IRequest<ApiResponse<IEnumerable<PermissionDto>>>
+    public sealed record class GetAllPermissionQuery : IRequest<ApiResponse<IEnumerable<PermissionSummaryDto>>>
     {
     }
 }

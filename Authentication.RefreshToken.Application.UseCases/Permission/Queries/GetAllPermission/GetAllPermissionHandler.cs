@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetAllPermission
 {
-    public class GetAllPermissionHandler : IRequestHandler<GetAllPermissionQuery, ApiResponse<IEnumerable<PermissionDto>>>
+    public class GetAllPermissionHandler : IRequestHandler<GetAllPermissionQuery, ApiResponse<IEnumerable<PermissionSummaryDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -18,7 +18,7 @@ namespace Authentication.RefreshToken.Application.UseCases.Permission.Queries.Ge
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<PermissionDto>>> Handle(GetAllPermissionQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<IEnumerable<PermissionSummaryDto>>> Handle(GetAllPermissionQuery request, CancellationToken cancellationToken)
         {
             var totalRecords = await _unitOfWork.Permissions.CountAsync();
 
@@ -27,8 +27,8 @@ namespace Authentication.RefreshToken.Application.UseCases.Permission.Queries.Ge
 
             var permissions = await _unitOfWork.Permissions.GetAllAsync();
 
-            return new ApiResponse<IEnumerable<PermissionDto>>(
-                _mapper.Map<IEnumerable<PermissionDto>>(permissions),
+            return new ApiResponse<IEnumerable<PermissionSummaryDto>>(
+                _mapper.Map<IEnumerable<PermissionSummaryDto>>(permissions),
                 "Permissions retrieved successfully");
         }
     }
