@@ -2,9 +2,9 @@
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
 
-namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole
+namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRoles
 {
-    public sealed record class GetAllRoleQuery : IRequest<PagedResponse<IEnumerable<RoleDto>>>
+    public sealed record class GetRolesQuery : IRequest<PagedResponse<IEnumerable<RoleDto>>>
     {
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;

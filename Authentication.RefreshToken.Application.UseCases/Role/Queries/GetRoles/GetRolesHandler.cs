@@ -5,20 +5,20 @@ using Authentication.RefreshToken.Concerns.Common;
 using MapsterMapper;
 using MediatR;
 
-namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole
+namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRoles
 {
-    public class GetAllRoleHandler : IRequestHandler<GetAllRoleQuery, PagedResponse<IEnumerable<RoleDto>>>
+    public class GetRolesHandler : IRequestHandler<GetRolesQuery, PagedResponse<IEnumerable<RoleDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetAllRoleHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetRolesHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public async Task<PagedResponse<IEnumerable<RoleDto>>> Handle(GetAllRoleQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResponse<IEnumerable<RoleDto>>> Handle(GetRolesQuery request, CancellationToken cancellationToken)
         {
             var pageNumber = request.PageNumber;
             var pageSize = request.PageSize;

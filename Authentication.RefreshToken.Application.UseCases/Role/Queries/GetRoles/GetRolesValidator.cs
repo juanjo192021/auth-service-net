@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole
+namespace Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRoles
 {
-    public class GetAllRoleValidator : AbstractValidator<GetAllRoleQuery>
+    public class GetRolesValidator : AbstractValidator<GetRolesQuery>
     {
-        public GetAllRoleValidator()
+        public GetRolesValidator()
         {
             RuleFor(x => x.PageNumber)
             .GreaterThan(0)

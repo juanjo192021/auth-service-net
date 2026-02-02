@@ -60,9 +60,9 @@ namespace Authentication.RefreshToken.Application.UseCases.Common.Mappings
             config.NewConfig<UpdateRoleCommand, Domain.Entities.Role>()
                 .IgnoreNullValues(true);
 
-            config.NewConfig<Domain.Entities.Role, RoleSummaryDto>()
-                .Map(dest => dest.Permissions, src => src.RolePermissions.Select(rp => rp.Permission))
-                .IgnoreNullValues(true);
+            //config.NewConfig<Domain.Entities.Role, RoleSummaryDto>()
+            //    .Map(dest => dest.Permissions, src => src.RolePermissions.Select(rp => rp.Permission))
+            //    .IgnoreNullValues(true);
 
             config.NewConfig<Domain.Entities.Role, RoleDto>()
                 .Map(dest => dest.Users, src => src.UserRoles!

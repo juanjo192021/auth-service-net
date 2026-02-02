@@ -3,8 +3,8 @@ using Authentication.RefreshToken.Application.Dto.Role;
 using Authentication.RefreshToken.Application.UseCases.Role.Commands.CreateRole;
 using Authentication.RefreshToken.Application.UseCases.Role.Commands.DeactivateRole;
 using Authentication.RefreshToken.Application.UseCases.Role.Commands.UpdateRole;
-using Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRole;
-using Authentication.RefreshToken.Application.UseCases.Role.Queries.GetAllRoleWithoutPagination;
+using Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRoles;
+using Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRoleLookup;
 using Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRole;
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
@@ -71,7 +71,7 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
         [SwaggerResponse(StatusCodes.Status400BadRequest, "BadRequest", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
-        public async Task<IActionResult> GetAllAsync([FromQuery] GetAllRoleQuery query)
+        public async Task<IActionResult> GetAllAsync([FromQuery] GetRolesQuery query)
         {
             var response = await _mediator.Send(query);
             return Ok(response);
@@ -79,16 +79,16 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
 
         [HttpGet("get-roles")]
         [SwaggerOperation(
-            Summary = "Get All Roles",
-            Description = "Retrieve all roles in the system without pagination",
-            OperationId = "GetAllRoles"
+            Summary = "Get Role Lookup",
+            Description = "Retrieve all roles",
+            OperationId = "GetRoleLookupQuery"
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(ApiResponse<IEnumerable<RoleDto>>))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
         public async Task<IActionResult> GetAllAsync()
         {
-            var response = await _mediator.Send(new GetAllRoleWithoutPaginationQuery() { });
+            var response = await _mediator.Send(new GetRoleLookupQuery() { });
             return Ok(response);
         }
 
