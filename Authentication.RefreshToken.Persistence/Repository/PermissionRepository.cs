@@ -40,9 +40,9 @@ namespace Authentication.RefreshToken.Persistence.Repository
 
         public async Task<IEnumerable<Permission>> GetAllAsync(int pageNumber, int pageSize, string search)
         {
-            IQueryable<Permission> query = _context.Permissions;
-                //.Include(r => r.UserRoles!)
-                //.ThenInclude(ur => ur.User);
+            IQueryable<Permission> query = _context.Permissions
+                .ApplyFullIncludes()
+                .AsSplitQuery();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -53,7 +53,7 @@ namespace Authentication.RefreshToken.Persistence.Repository
             return await query
                 .OrderBy(x => x.Id)
                 .Paginate(pageNumber, pageSize)
-                .ToListAsync(); ;
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Permission>> GetLookupAsync()
