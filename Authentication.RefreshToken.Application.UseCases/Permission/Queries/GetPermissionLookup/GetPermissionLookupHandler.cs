@@ -5,27 +5,25 @@ using Authentication.RefreshToken.Concerns.Common;
 using MapsterMapper;
 using MediatR;
 
-namespace Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetAllPermission
+namespace Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetPermissionLookup
 {
-    public class GetAllPermissionHandler : IRequestHandler<GetAllPermissionQuery, ApiResponse<IEnumerable<PermissionSummaryDto>>>
+    public class GetPermissionLookupHandler : IRequestHandler<GetPermissionLookupQuery, ApiResponse<IEnumerable<PermissionSummaryDto>>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetAllPermissionHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetPermissionLookupHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
-        public async Task<ApiResponse<IEnumerable<PermissionSummaryDto>>> Handle(GetAllPermissionQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<IEnumerable<PermissionSummaryDto>>> Handle(GetPermissionLookupQuery request, CancellationToken cancellationToken)
         {
             var totalRecords = await _unitOfWork.Permissions.CountAsync();
 
             if (totalRecords < 1)
                 throw new NotFoundException("Not found any permissions");
 
-            var permissions = await _unitOfWork.Permissions.GetAllAsync();
+            var permissions = await _unitOfWork.Permissions.GetLookupAsync();
 
             return new ApiResponse<IEnumerable<PermissionSummaryDto>>(
                 _mapper.Map<IEnumerable<PermissionSummaryDto>>(permissions),

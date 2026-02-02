@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Authentication.RefreshToken.Application.Dto.Permission;
-using Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetAllPermission;
+using Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetPermissionLookup;
+using Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetPermissions;
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -24,16 +25,32 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
 
         [HttpGet]
         [SwaggerOperation(
+            Summary = "List of Permissions",
+            Description = "Obtain all permissions with pagination",
+            OperationId = "ListPermissions"
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(PagedResponse<PermissionDto>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "BadRequest", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
+        public async Task<IActionResult> GetAllAsync([FromQuery] GetPermissionsQuery query)
+        {
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
+
+        [HttpGet("get-permissions")]
+        [SwaggerOperation(
             Summary = "Get All Permissions",
             Description = "Retrieve all permissions in the system",
             OperationId = "GetAllPermissions"
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(ApiResponse<IEnumerable<PermissionDto>>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(ApiResponse<IEnumerable<PermissionSummaryDto>>))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found", typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
         public async Task<IActionResult> GetAllAsync()
         {
-            var response = await _mediator.Send(new GetAllPermissionQuery() { });
+            var response = await _mediator.Send(new GetPermissionLookupQuery() { });
             return Ok(response);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Authentication.RefreshToken.Application.Interfaces.Persistence;
 using Authentication.RefreshToken.Domain.Entities;
 using Authentication.RefreshToken.Persistence.Contexts;
+using Authentication.RefreshToken.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.RefreshToken.Persistence.Repository
@@ -49,11 +50,24 @@ namespace Authentication.RefreshToken.Persistence.Repository
                              .OrderBy(m => m.Id);
             }
 
-            var data = await query.OrderBy(x => x.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize).ToListAsync();
+            return await query
+                .OrderBy(x => x.Id)
+                .Paginate(pageNumber, pageSize)
+                .ToListAsync(); ;
+        }
 
-            return data;
+        public async Task<IEnumerable<Permission>> GetLookupAsync()
+        {
+            return await _context.Permissions
+                .AsNoTracking()
+                .Select(p => new Permission
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    IsActive = p.IsActive
+                })
+                .ToListAsync();
         }
 
         public async Task<Permission?> GetByIdAsync(int id)
