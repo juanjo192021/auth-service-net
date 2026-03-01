@@ -1,7 +1,10 @@
 ﻿using Asp.Versioning;
 using Authentication.RefreshToken.Application.Dto.Permission;
+using Authentication.RefreshToken.Application.Dto.Role;
+using Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetPermission;
 using Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetPermissionLookup;
 using Authentication.RefreshToken.Application.UseCases.Permission.Queries.GetPermissions;
+using Authentication.RefreshToken.Application.UseCases.Role.Queries.GetRole;
 using Authentication.RefreshToken.Concerns.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -51,6 +54,22 @@ namespace Authentication.RefreshToken.Services.WebApi.Controllers.v1
         public async Task<IActionResult> GetAllAsync()
         {
             var response = await _mediator.Send(new GetPermissionLookupQuery() { });
+            return Ok(response);
+        }
+
+        [HttpGet("{id:int}")]
+        [SwaggerOperation(
+            Summary = "Get Permission by Id",
+            Description = "Obtain a permission by its identifier",
+            OperationId = "GetPermissionById"
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "OK", typeof(ApiResponse<PermissionDto>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "BadRequest", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Not Found", typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Internal Server error", typeof(ErrorResponse))]
+        public async Task<IActionResult> GetByIdAsync(int id)
+        {
+            var response = await _mediator.Send(new GetPermissionQuery() { Id = id });
             return Ok(response);
         }
     }

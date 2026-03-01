@@ -73,8 +73,7 @@ namespace Authentication.RefreshToken.Persistence.Repository
         public async Task<Permission?> GetByIdAsync(int id)
         {
             return await _context.Permissions
-                //.Include(r => r.UserRoles!)
-                //.ThenInclude(ur => ur.User)
+                .ApplyFullIncludes()
                 .SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
 

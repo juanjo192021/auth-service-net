@@ -57,6 +57,12 @@ dotnet ef migrations add [SchemeName] --project Authentication.RefreshToken.Pers
 dotnet ef database update --project Authentication.RefreshToken.Persistence --startup-project Authentication.RefreshToken.Services.WebApi --context ApplicationDbContext
 ```
 
+**Create script of database**
+
+```
+dotnet ef migrations script --project Authentication.RefreshToken.Persistence --startup-project Authentication.RefreshToken.Services.WebApi --context ApplicationDbContext -o Database/[SchemeName].sql
+```
+
 ---
 
 # 📂 Application
