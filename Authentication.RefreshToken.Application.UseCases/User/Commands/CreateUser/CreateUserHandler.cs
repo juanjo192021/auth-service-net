@@ -47,11 +47,9 @@ namespace Authentication.RefreshToken.Application.UseCases.User.Commands.CreateU
 
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            return new ApiResponse<UserSummaryDto>()
-            {
-                Data = _mapper.Map<UserSummaryDto>(createdUser),
-                Message = "User created successfully"
-            };
+            return new ApiResponse<UserSummaryDto>(
+                _mapper.Map<UserSummaryDto>(createdUser),
+                "User created successfully");
         }
     }
 }

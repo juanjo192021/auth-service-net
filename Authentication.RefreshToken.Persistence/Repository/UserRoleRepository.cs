@@ -26,7 +26,6 @@ namespace Authentication.RefreshToken.Persistence.Repository
             {
                 UserId = userId,
                 RoleId = roleId,
-                IsAssigned = true
             }).ToList();
 
             await _context.UserRoles.AddRangeAsync(userRoles);
@@ -70,7 +69,6 @@ namespace Authentication.RefreshToken.Persistence.Repository
                 {
                     UserId = userId,
                     RoleId = roleId,
-                    IsAssigned = true
                     // CreatedOn / CreatedBy se maneja en SaveChanges si tienes auditoría
                 });
 

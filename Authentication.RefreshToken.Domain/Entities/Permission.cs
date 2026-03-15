@@ -9,7 +9,5 @@ namespace Authentication.RefreshToken.Domain.Entities
         public string? Description { get; set; }
         public bool IsActive { get; set; }
         public virtual ICollection<RolePermission>? RolePermissions { get; set; }
-        //public virtual ICollection<UserPermission>? UserPermissions { get; set; }
-        //public virtual ICollection<Menu>? Menus { get; set; }
     }
 }

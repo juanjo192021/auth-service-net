@@ -74,10 +74,10 @@ namespace Authentication.RefreshToken.Persistence.Repository
 
         public async Task<bool> IsDocumentUniqueAsync(string documentNumber)
         {
-            var existsUser = await _context.Users
-                .SingleOrDefaultAsync(x => x.DocumentNumber.Equals(documentNumber));
+            //var existsUser = await _context.Users
+            //    .SingleOrDefaultAsync(x => x.DocumentNumber.Equals(documentNumber));
 
-            if (existsUser is not null) return false;
+            //if (existsUser is not null) return false;
 
             return true;
         }

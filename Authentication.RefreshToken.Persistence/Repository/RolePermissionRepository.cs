@@ -27,8 +27,7 @@ namespace Authentication.RefreshToken.Persistence.Repository
             var rolePermissions = validPermission.Select(permissionId => new RolePermission
             {
                 RoleId = roleId,
-                PermissionId = permissionId,
-                IsEnabled = true
+                PermissionId = permissionId
             }).ToList();
 
             await _context.RolePermissions.AddRangeAsync(rolePermissions);
@@ -75,7 +74,6 @@ namespace Authentication.RefreshToken.Persistence.Repository
                 {
                     RoleId = roleId,
                     PermissionId = pId,
-                    IsEnabled = true
                 });
 
                 await _context.RolePermissions.AddRangeAsync(newRolePermissions);

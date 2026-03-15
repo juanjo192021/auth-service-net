@@ -12,10 +12,6 @@ namespace Authentication.RefreshToken.Persistence.Configurations
 
             builder.HasKey(rp => new { rp.RoleId, rp.PermissionId });
 
-            builder.Property(rp => rp.IsEnabled)
-                   .IsRequired()
-                   .HasDefaultValue(true);
-
             // Relaciones
             builder.HasOne(rp => rp.Role)
                    .WithMany(r => r.RolePermissions)

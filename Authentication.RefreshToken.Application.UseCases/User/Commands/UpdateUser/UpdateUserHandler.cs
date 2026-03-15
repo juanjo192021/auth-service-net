@@ -35,7 +35,7 @@ namespace Authentication.RefreshToken.Application.UseCases.User.Commands.UpdateU
                     throw new ConflictException($"Another user with email '{request.Email}' already exists.");
             }
 
-            if(request.DocumentNumber is not null && request.DocumentNumber != user.DocumentNumber)
+            if(request.DocumentNumber is not null && request.DocumentNumber != "")
             {
                 if (!await _unitOfWork.Users.IsDocumentUniqueAsync(request.DocumentNumber))
                     throw new ConflictException($"Another user with document number '{request.DocumentNumber}' already exists.");

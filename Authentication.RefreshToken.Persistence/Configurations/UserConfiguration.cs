@@ -33,29 +33,6 @@ namespace Authentication.RefreshToken.Persistence.Configurations
             builder.Property(u => u.ImageUrl)
                    .HasMaxLength(int.MaxValue);
 
-            builder.Property(u => u.DocumentType)
-                   .HasMaxLength(20);
-
-            builder.Property(u => u.DocumentNumber)
-                   .HasMaxLength(20);
-
-            builder.HasIndex(u => u.DocumentNumber)
-                   .IsUnique();
-
-            builder.Property(u => u.BirthDate);
-
-            builder.Property(u => u.Phone)
-                   .HasMaxLength(20);
-
-            builder.Property(u => u.Mobile)
-                   .HasMaxLength(20);
-
-            builder.Property(u => u.Gender)
-                   .HasMaxLength(20);
-
-            builder.Property(u => u.Address)
-                   .HasMaxLength(200);
-
             builder.Property(u => u.IsActive)
                    .IsRequired()
                    .HasDefaultValue(true);
@@ -68,44 +45,36 @@ namespace Authentication.RefreshToken.Persistence.Configurations
                    .IsRequired()
                    .HasDefaultValueSql("GETDATE()");
 
-            builder.Property(r => r.CreatedBy)
-                   .IsRequired(false);
+            builder.Property(r => r.CreatedBy).IsRequired(false);
+            builder.Property(r => r.UpdatedAt).IsRequired(false);
+            builder.Property(r => r.UpdatedBy).IsRequired(false);
+            builder.Property(r => r.DeactivatedAt).IsRequired(false);
+            builder.Property(r => r.DeactivatedBy).IsRequired(false);
 
-            builder.Property(r => r.UpdatedAt)
-                   .IsRequired(false);
-
-            builder.Property(r => r.UpdatedBy)
-                   .IsRequired(false);
-
-            builder.Property(r => r.DeactivatedAt)
-                   .IsRequired(false);
-
-            builder.Property(r => r.DeactivatedBy)
-                   .IsRequired(false);
-
-            // Relaciones
-            // UserRoles (uno a muchos)
             builder.HasMany(u => u.UserRoles)
                    .WithOne(ur => ur.User)
                    .HasForeignKey(ur => ur.UserId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // UserClaims (uno a muchos)
             builder.HasMany(u => u.UserClaims)
                    .WithOne(uc => uc.User)
                    .HasForeignKey(uc => uc.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // UserRefreshTokens (uno a muchos)
             builder.HasMany(u => u.UserRefreshTokens)
                    .WithOne(rt => rt.User)
                    .HasForeignKey(rt => rt.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-           /* builder.HasMany(u => u.UserPermissions)
-                .WithOne(up => up.User)
-                .HasForeignKey(up => up.UserId)
-                .OnDelete(DeleteBehavior.Cascade);*/
+            builder.HasOne(u => u.Employee)
+                   .WithOne(e => e.User)
+                   .HasForeignKey<Employee>(e => e.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(u => u.Customer)
+                   .WithOne(c => c.User)
+                   .HasForeignKey<Customer>(c => c.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(r => r.CreatedByUser)
                 .WithMany()

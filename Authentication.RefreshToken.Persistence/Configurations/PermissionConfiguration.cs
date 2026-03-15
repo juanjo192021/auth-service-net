@@ -50,16 +50,6 @@ namespace Authentication.RefreshToken.Persistence.Configurations
                 .HasForeignKey(rp => rp.PermissionId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //builder.HasMany(p => p.UserPermissions)
-            //    .WithOne(up => up.Permission)
-            //    .HasForeignKey(up => up.PermissionId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //builder.HasMany(p => p.Menus)
-            //    .WithOne(m => m.Permission)
-            //    .HasForeignKey(m => m.PermissionId)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasOne(r => r.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(r => r.CreatedBy)

@@ -6,6 +6,8 @@ namespace Authentication.RefreshToken.Persistence.Contexts
     public class ApplicationDbContext : DbContext
     {
         // Entidades a mapear
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
@@ -14,7 +16,6 @@ namespace Authentication.RefreshToken.Persistence.Contexts
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
-        //public DbSet<UserPermission> UserPermissions { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -22,6 +23,8 @@ namespace Authentication.RefreshToken.Persistence.Contexts
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Customer>().ToTable("Customers");
+            builder.Entity<Employee>().ToTable("Employees");
             builder.Entity<User>().ToTable("Users");
             builder.Entity<Role>().ToTable("Roles");
             builder.Entity<UserRole>().ToTable("UserRoles");
@@ -30,8 +33,7 @@ namespace Authentication.RefreshToken.Persistence.Contexts
             builder.Entity<UserRefreshToken>().ToTable("UserRefreshTokens");
             builder.Entity<Permission>().ToTable("Permissions");
             builder.Entity<RolePermission>().ToTable("RolePermissions");
-            //builder.Entity<UserPermission>().ToTable("UserPermissions");
-
+            
             base.OnModelCreating(builder);
 
             // Aplica automáticamente todas las configuraciones del assembly
